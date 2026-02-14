@@ -168,7 +168,7 @@ export default function PositiveAffirmations({
 
                 <button
                     onClick={handleManualClick}
-                    className="fixed bottom-[10%] left-[20%] flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto z-50"
+                    className="fixed bottom-[10.5%] left-[10.0%] flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto z-50"
                 >
                     <RefreshCw className="group-hover:rotate-180 transition-transform duration-500" size={20} />
                     <span>次の言葉</span>

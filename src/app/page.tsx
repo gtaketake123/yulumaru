@@ -32,7 +32,7 @@ export default function Home() {
   const [fallingColorful, setFallingColorful] = useState<boolean | "black">(false);
 
   // Settings States
-  const [circleScale, setCircleScale] = useState(2.0);
+  const [circleScale, setCircleScale] = useState(1.8);
   // Req 82, 98-5, 98-7: Default Animation Speed 60s
   const [bgAnimSpeed, setBgAnimSpeed] = useState(60);
   const [bgAnimDirection, setBgAnimDirection] = useState<"vertical" | "horizontal" | "diagonal">("vertical");
@@ -327,7 +327,7 @@ export default function Home() {
           <div
             className="pointer-events-auto fixed z-[300]"
             style={{
-              bottom: '10%',
+              bottom: '10.5%',
               left: '54.6%'
             }}
           >
@@ -367,24 +367,6 @@ export default function Home() {
 
       {/* Top Right Buttons (Req 14, 15) */}
       <div className="absolute top-[1.9%] right-[4%] z-40 flex items-center gap-2 pointer-events-auto flex-row-reverse">
-        <SettingsMenu
-          wordMode={wordMode} setWordMode={setWordMode}
-          bgTheme={bgTheme} setBgTheme={setBgTheme}
-          circleColor={circleColor} setCircleColor={setCircleColor}
-          enableTTS={enableTTS} setEnableTTS={setEnableTTS}
-          fallingSpeed={fallingSpeed} setFallingSpeed={setFallingSpeed}
-          fallingDensity={fallingDensity} setFallingDensity={setFallingDensity}
-          fallingColorful={fallingColorful} setFallingColorful={setFallingColorful}
-          circleScale={circleScale} setCircleScale={setCircleScale}
-          bgAnimSpeed={bgAnimSpeed} setBgAnimSpeed={setBgAnimSpeed}
-          bgAnimDirection={bgAnimDirection} setBgAnimDirection={setBgAnimDirection}
-          showCircle={showCircle} setShowCircle={setShowCircle}
-          showWords={showWords} setShowWords={setShowWords}
-          starVariant={starVariant} setStarVariant={setStarVariant}
-          blurSharpness={blurSharpness} setBlurSharpness={setBlurSharpness}
-          blurFantasy={blurFantasy} setBlurFantasy={setBlurFantasy}
-          isPaused={isPaused} togglePause={togglePause}
-        />
 
         {/* Theme Palette */}
         <button
