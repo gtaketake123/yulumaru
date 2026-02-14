@@ -84,7 +84,7 @@ export default function BackgroundAudio() {
         <div className="fixed bottom-[3%] left-[4%] z-40 flex flex-col-reverse items-center gap-4">
             <button
                 onClick={toggleAudio}
-                className={`p-3 rounded-full backdrop-blur-md transition-all ${isPlaying ? "bg-white/20 text-white shadow-[0_0_15px_rgba(255,255,255,0.3)]" : "bg-white/5 text-white/50 hover:bg-white/10"
+                className={`w-[46px] h-[46px] flex items-center justify-center rounded-full backdrop-blur-md transition-all ${isPlaying ? "bg-white/20 text-white shadow-[0_0_15px_rgba(255,255,255,0.3)]" : "bg-white/5 text-white/50 hover:bg-white/10"
                     }`}
                 title="環境音 (ブラウンノイズ)"
             >

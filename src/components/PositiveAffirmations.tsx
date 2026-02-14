@@ -150,7 +150,7 @@ export default function PositiveAffirmations({
     // Mode: Manual (Random)
     if (mode === "random") {
         return (
-            <div className="flex flex-col items-center justify-center gap-6 z-20">
+            <div className="flex flex-col items-center justify-center gap-6 z-20 -translate-y-[30px]">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentMessage}
@@ -168,7 +168,7 @@ export default function PositiveAffirmations({
 
                 <button
                     onClick={handleManualClick}
-                    className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto"
+                    className="fixed bottom-[10%] left-[20%] flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto z-50"
                 >
                     <RefreshCw className="group-hover:rotate-180 transition-transform duration-500" size={20} />
                     <span>次の言葉</span>
@@ -207,7 +207,7 @@ export default function PositiveAffirmations({
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -20, filter: "blur(5px)" }}
                 transition={{ duration: 1.0 }}
-                className="text-center px-4 max-w-2xl z-20"
+                className="text-center px-4 max-w-2xl z-20 -translate-y-[30px]"
             >
                 <p className="text-xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70 drop-shadow-lg leading-relaxed py-2">
                     {currentMessage}

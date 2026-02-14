@@ -42,6 +42,9 @@ export default function Home() {
   // Req 84: Starry Animation Overlay State
   const [starVariant, setStarVariant] = useState<"none" | "blink" | "rise">("blink");
 
+  // Mobile Req 10: Toggle for Word Mode Menu
+  const [isWordMenuOpen, setIsWordMenuOpen] = useState(false);
+
   // Req 17-18, 35-36, 40: 24 Coolhue gradients (Color Map for Directional Support)
   const THEME_COLORS: Record<string, string[]> = {
     "calm-sky": ["#a8edea", "#88d5f7", "#e0c3fc"],
@@ -322,100 +325,84 @@ export default function Home() {
         {/* Req 99-6: Word Mode Dropdown at Bottom - Redesigned C4-5 (Portal Fix C4-9) */}
         {mounted ? createPortal(
           <div
-            className="pointer-events-auto fixed left-1/2 -translate-x-1/2 z-[300] flex items-center justify-center gap-2"
+            className="pointer-events-auto fixed z-[300]"
             style={{
-              bottom: '88px'
+              bottom: '10%',
+              left: '54.6%'
             }}
           >
-            {/* Left Box Button */}
-            <button
-              onClick={() => {
-                const modes = ["breath-sync", "falling", "inside", "random"];
-                const currentIndex = modes.indexOf(wordMode);
-                const prevIndex = (currentIndex - 1 + modes.length) % modes.length;
-                setWordMode(modes[prevIndex]);
-              }}
-              className="w-[23px] h-[23px] rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/10 text-white/80"
-            >
-              <ChevronDown size={14} className="rotate-90" />
-            </button>
-
             <div className="relative">
               <button
-                onClick={() => {
-                  // Toggle dropdown logic requires state, but for now we can use a simple focus approach or just rely on the existing visibility.
-                  // Since we can't easily add state to page.tsx without reading the top (useState hooks), 
-                  // we will implement a CSS-based focus/active approach or use the existing state if possible.
-                  // BUT user requested "Fix to tap".
-                  // Let's assume we can add a state or use a ref. 
-                  // Since I can't add state efficiently here without replacing the whole file header, 
-                  // I will check if I can use a simpler method or if I must add state.
-                  // Wait, I can't add state in this tool call easily. 
-                  // I will stick to the visual changes first, and maybe use 'focus-within' or similar if state is hard.
-                  // Actually, for a proper "Click to Open", I need a state variable.
-                  // I will try to add the variable in a separate call if needed, or assume I can't.
-                  // Let's use `group-focus` or `focus` on the button?
-                  // Or just implement the layout and the arrows first.
-                  // "プルダウンをタップで操作" -> The dropdown menu (absolute div) needs to show on click.
-                  // If I can't add state, I'll use the 'group' and `focus-within` trick?
-                  // `group:focus-within` works if the button keeps focus.
-                }}
-                className="group flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md transition-all text-sm font-medium border border-white/10 shadow-lg text-white/80 hover:text-white focus:outline-none"
-                tabIndex={0}
+                onClick={() => setIsWordMenuOpen(!isWordMenuOpen)}
+                className="group flex items-center justify-between px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md transition-all text-sm font-medium border border-white/10 shadow-lg text-white/80 hover:text-white"
+                style={{ width: '140px' }} // Match width of previous container roughly or Breathing button? User said 54.6% position. 
+              // Wait, user said "Right edge nicely aligned". If left is 54.6% (215px) and width is 182px, Right is 397px. Screen is 393px. Overflow!
+              // Breathing Mode Button (Req 15 prev): Left 54.6% (215px), Width 140px. Right Edge 355px.
+              // User said "Right edge aligned cleanly". This likely means "Align Right with Breathing Button".
+              // If Dropdown is also Left 54.6% and Width 140px, they align.
+              // I will set width to 140px to match Breathing Mode Button.
               >
-                <span>
+                <span className="truncate">
                   {wordMode === "breath-sync" && "呼吸連動"}
                   {wordMode === "random" && "手動"}
                   {wordMode === "falling" && "言葉の雨"}
                   {wordMode === "inside" && "サークル内"}
                 </span>
-                <ChevronDown size={14} className="opacity-70 transition-transform group-focus:rotate-180" />
+                <ChevronDown size={14} className={`opacity-70 transition-transform ${isWordMenuOpen ? "rotate-180" : ""}`} />
 
-                {/* Dropdown Menu - Show on Group Focus/Hover */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 py-2 bg-[#1a1a2e]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-focus:opacity-100 group-focus:visible hover:opacity-100 hover:visible transition-all transform origin-bottom overflow-hidden z-[301]">
-                  <div onClick={() => setWordMode("breath-sync")} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">呼吸連動</div>
-                  <div onClick={() => setWordMode("random")} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">手動</div>
-                  <div onClick={() => setWordMode("falling")} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">言葉の雨</div>
-                  <div onClick={() => setWordMode("inside")} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">サークル内</div>
+                {/* Dropdown Menu - Show on State True */}
+                <div className={`absolute bottom-full left-0 w-full mb-2 py-2 bg-[#1a1a2e]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl transition-all transform origin-bottom overflow-hidden z-[301] ${isWordMenuOpen ? "opacity-100 visible scale-100" : "opacity-0 invisible scale-95"}`}>
+                  <div onClick={() => { setWordMode("breath-sync"); setIsWordMenuOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">呼吸連動</div>
+                  <div onClick={() => { setWordMode("random"); setIsWordMenuOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">手動</div>
+                  <div onClick={() => { setWordMode("falling"); setIsWordMenuOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">言葉の雨</div>
+                  <div onClick={() => { setWordMode("inside"); setIsWordMenuOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">サークル内</div>
                 </div>
               </button>
             </div>
-
-            {/* Right Box Button */}
-            <button
-              onClick={() => {
-                const modes = ["breath-sync", "falling", "inside", "random"];
-                const currentIndex = modes.indexOf(wordMode);
-                const nextIndex = (currentIndex + 1) % modes.length;
-                setWordMode(modes[nextIndex]);
-              }}
-              className="w-[23px] h-[23px] rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/10 text-white/80"
-            >
-              <ChevronDown size={14} className="-rotate-90" />
-            </button>
           </div>,
           document.body
         ) : null}
 
       </div>
 
-      <div className="absolute top-20 left-4 z-40 flex flex-col gap-3 pointer-events-auto">
-        {/* Req 73: Sequential BG loop with UI [Icon + Number + Name] */}
+      {/* Top Right Buttons (Req 14, 15) */}
+      <div className="absolute top-[1.9%] right-[4%] z-40 flex items-center gap-2 pointer-events-auto flex-row-reverse">
+        <SettingsMenu
+          wordMode={wordMode} setWordMode={setWordMode}
+          bgTheme={bgTheme} setBgTheme={setBgTheme}
+          circleColor={circleColor} setCircleColor={setCircleColor}
+          enableTTS={enableTTS} setEnableTTS={setEnableTTS}
+          fallingSpeed={fallingSpeed} setFallingSpeed={setFallingSpeed}
+          fallingDensity={fallingDensity} setFallingDensity={setFallingDensity}
+          fallingColorful={fallingColorful} setFallingColorful={setFallingColorful}
+          circleScale={circleScale} setCircleScale={setCircleScale}
+          bgAnimSpeed={bgAnimSpeed} setBgAnimSpeed={setBgAnimSpeed}
+          bgAnimDirection={bgAnimDirection} setBgAnimDirection={setBgAnimDirection}
+          showCircle={showCircle} setShowCircle={setShowCircle}
+          showWords={showWords} setShowWords={setShowWords}
+          starVariant={starVariant} setStarVariant={setStarVariant}
+          blurSharpness={blurSharpness} setBlurSharpness={setBlurSharpness}
+          blurFantasy={blurFantasy} setBlurFantasy={setBlurFantasy}
+          isPaused={isPaused} togglePause={togglePause}
+        />
+
+        {/* Theme Palette */}
         <button
           onClick={() => {
             const currentIndex = themes.findIndex(t => t.id === bgTheme);
             const nextIndex = (currentIndex + 1) % themes.length;
             setBgTheme(themes[nextIndex].id);
           }}
-          className="flex items-center gap-3 px-4 py-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white/90 transition-all border border-white/5"
+          className="flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white/90 transition-all border border-white/5 h-[46px]"
           title="背景色を順に変更"
         >
           <Palette size={18} />
           <span className="text-xs font-bold whitespace-nowrap">
-            {themes.find(t => t.id === bgTheme)?.name || "1-Calm Sky"}
+            {themes.findIndex(t => t.id === bgTheme) + 1}
           </span>
         </button>
 
+        {/* Circle Color */}
         <button
           onClick={() => {
             const currentIndex = themes.findIndex(t => t.id === circleColor) !== -1
@@ -424,17 +411,17 @@ export default function Home() {
             const nextIndex = (currentIndex + 1) % themes.length;
             setCircleColor(themes[nextIndex].id);
           }}
-          className="flex items-center gap-3 px-4 py-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white/90 transition-all border border-white/5"
+          className="flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white/90 transition-all border border-white/5 h-[46px]"
           title="サークル色を順に変更"
         >
           <Circle size={18} />
           <span className="text-xs font-bold whitespace-nowrap">
-            {themes.find(t => t.id === circleColor)?.name || "1"}
+            {themes.findIndex(t => t.id === circleColor) !== -1 ? themes.findIndex(t => t.id === circleColor) + 1 : 1}
           </span>
         </button>
       </div>
 
-      <footer className="absolute bottom-4 text-[10px] text-white/30 tracking-widest z-30 font-sans">
+      <footer className="absolute bottom-4 text-[10px] text-white/30 tracking-widest z-30 font-sans w-full text-center pointer-events-none">
         © 2026 You lull mind room.
       </footer>
 

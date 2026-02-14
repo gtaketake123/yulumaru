@@ -105,7 +105,7 @@ export default function BreathingGuide({
     onCycleComplete,
     circleColor = "bg-gradient-to-br from-white/40 to-white/10",
     centerContent,
-    baseScale = 1.5, // Req 49: Default multiplier
+    baseScale = 1.8, // Req 49: Default multiplier
 }: BreathingGuideProps) {
     const [activeMode, setActiveMode] = useState<BreathingConfig>(
         BREATHING_MODES.find(m => m.id === defaultMode) || BREATHING_MODES[0]
