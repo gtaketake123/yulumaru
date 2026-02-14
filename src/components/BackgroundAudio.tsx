@@ -81,7 +81,7 @@ export default function BackgroundAudio() {
     };
 
     return (
-        <div className="fixed bottom-4 left-4 z-40 flex items-center gap-2">
+        <div className="fixed bottom-[3%] left-[4%] z-40 flex flex-col-reverse items-center gap-4">
             <button
                 onClick={toggleAudio}
                 className={`p-3 rounded-full backdrop-blur-md transition-all ${isPlaying ? "bg-white/20 text-white shadow-[0_0_15px_rgba(255,255,255,0.3)]" : "bg-white/5 text-white/50 hover:bg-white/10"
@@ -92,15 +92,17 @@ export default function BackgroundAudio() {
             </button>
 
             {isPlaying && (
-                <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    value={volume}
-                    onChange={(e) => setVolume(parseFloat(e.target.value))}
-                    className="w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white"
-                />
+                <div className="h-24 w-8 flex items-center justify-center -translate-y-2">
+                    <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={volume}
+                        onChange={(e) => setVolume(parseFloat(e.target.value))}
+                        className="w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white -rotate-90 shadow-lg"
+                    />
+                </div>
             )}
         </div>
     );

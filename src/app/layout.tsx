@@ -11,6 +11,7 @@ const notoSansJP = Noto_Sans_JP({
 export const metadata: Metadata = {
   title: "ゆるまる - 心を整える深呼吸",
   description: "深呼吸とポジティブな言葉で、心を整えるマインドフルネスアプリ。",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
