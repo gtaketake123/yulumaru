@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import messages from "../data/messages.json";
 import { RefreshCw } from "lucide-react";
@@ -166,13 +167,17 @@ export default function PositiveAffirmations({
                     </motion.div>
                 </AnimatePresence>
 
-                <button
-                    onClick={handleManualClick}
-                    className="fixed bottom-[10.5%] left-[10.0%] flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto z-50"
-                >
-                    <RefreshCw className="group-hover:rotate-180 transition-transform duration-500" size={20} />
-                    <span>次の言葉</span>
-                </button>
+                {/* Req 12-2: Fixed Position Button via Portal to escape transform context */}
+                {createPortal(
+                    <button
+                        onClick={handleManualClick}
+                        className="fixed bottom-[10.5%] left-[10.0%] flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto z-50"
+                    >
+                        <RefreshCw className="group-hover:rotate-180 transition-transform duration-500" size={20} />
+                        <span>次の言葉</span>
+                    </button>,
+                    document.body
+                )}
             </div>
         );
     }
