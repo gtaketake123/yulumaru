@@ -161,7 +161,7 @@ export default function PositiveAffirmations({
                         transition={{ duration: 0.8 }}
                         className="text-center px-4 max-w-2xl"
                     >
-                        <p className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70 drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)] leading-relaxed p-4">
+                        <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)] leading-relaxed p-4">
                             {currentMessage}
                         </p>
                     </motion.div>
@@ -214,7 +214,7 @@ export default function PositiveAffirmations({
                 transition={{ duration: 1.0 }}
                 className="text-center px-4 max-w-2xl z-20 -translate-y-[30px]"
             >
-                <p className="text-xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70 drop-shadow-lg leading-relaxed py-2">
+                <p className="text-xl md:text-3xl font-bold text-white drop-shadow-lg leading-relaxed py-2">
                     {currentMessage}
                 </p>
             </motion.div>
