@@ -278,7 +278,7 @@ export default function BreathingGuide({
                         duration: isPlaying ? currentPhase.duration : 1,
                         ease: "easeInOut",
                     }}
-                    className={`w-40 h-40 rounded-full border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.15)] flex items-center justify-center ${circleColor}`}
+                    className={`w-40 h-40 rounded-full border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.15)] md:shadow-[0_0_40px_rgba(255,255,255,0.2)] md:backdrop-blur-sm flex items-center justify-center ${circleColor}`}
                     style={{ willChange: "transform" }}
                 >
                     {centerContent}
