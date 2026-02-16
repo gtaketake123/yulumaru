@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Settings, X, Heart, Circle, CloudRain, MousePointer, Maximize, Eye, EyeOff, ArrowUp, ArrowRight, TrendingUp, Play, Pause } from "lucide-react";
+import { Settings, X, Heart, Circle, CloudRain, MousePointer, Maximize, Eye, EyeOff, ArrowUp, ArrowRight, TrendingUp, Play, Pause, User, Volume2, Cloud, Music, Moon, Droplets, Flame, Bird, TreePine, Feather } from "lucide-react";
+import AuthButton from "./AuthButton";
 
-type Tab = "words" | "background" | "audio";
+type Tab = "words" | "background" | "audio" | "account";
 
 interface SettingsMenuProps {
     wordMode: string;
@@ -171,6 +172,13 @@ export default function SettingsMenu({
                             >
                                 BGM
                             </button>
+                            <button
+                                onClick={() => setActiveTab("account")}
+                                className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === "account" ? "bg-white/10 text-white" : "text-white/50 hover:text-white/80"
+                                    }`}
+                            >
+                                アカウント
+                            </button>
                         </div>
 
                         <div className="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
@@ -180,12 +188,12 @@ export default function SettingsMenu({
                                         <h3 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-4">環境音の選択</h3>
                                         <div className="grid grid-cols-1 gap-3">
                                             {[
-                                                { id: "wave", label: "波音", desc: "穏やかな波の音" },
-                                                { id: "birds", label: "鳥のさえずり", desc: "森の中の静寂" },
-                                                { id: "rivers-birds", label: "川と鳥の囀り", desc: "清流と鳥の声" },
-                                                { id: "bonfires", label: "焚火", desc: "パチパチとした安らぎ" },
-                                                { id: "rivers", label: "川のせせらぎ", desc: "流れる水の音" },
-                                                { id: "brown-noise", label: "ブラウンノイズ", desc: "深い集中 (生成音)" },
+                                                { id: "wave", label: "夜の浜辺", desc: "穏やかな波の音", icon: Moon },
+                                                { id: "rivers", label: "春の小川", desc: "流れる水の音", icon: Droplets },
+                                                { id: "bonfires", label: "冬の暖炉", desc: "パチパチとした安らぎ", icon: Flame },
+                                                { id: "rivers-birds", label: "水辺に集う小鳥", desc: "清流と鳥の声", icon: Feather },
+                                                { id: "birds", label: "野鳥の森", desc: "森の中の静寂", icon: Bird },
+                                                { id: "brown-noise", label: "ブラウンノイズ", desc: "深い集中 (生成音)", icon: Cloud },
                                             ].map((bgm) => (
                                                 <button
                                                     key={bgm.id}
@@ -195,9 +203,14 @@ export default function SettingsMenu({
                                                         : "bg-white/5 border-transparent hover:bg-white/10"
                                                         }`}
                                                 >
-                                                    <div>
-                                                        <span className="text-sm font-bold block">{bgm.label}</span>
-                                                        <span className="text-xs text-white/60">{bgm.desc}</span>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`p-2 rounded-full ${bgmSelection === bgm.id ? "bg-white/20" : "bg-white/5"}`}>
+                                                            <bgm.icon size={18} className={bgmSelection === bgm.id ? "text-white" : "text-white/60"} />
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-sm font-bold block">{bgm.label}</span>
+                                                            <span className="text-xs text-white/60">{bgm.desc}</span>
+                                                        </div>
                                                     </div>
                                                     {bgmSelection === bgm.id && (
                                                         <div className="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)]" />
@@ -209,6 +222,17 @@ export default function SettingsMenu({
                                             ※左下のボタンでBGM切替・音量調整ができます
                                         </p>
                                     </div>
+                                </div>
+                            ) : activeTab === "account" ? (
+                                <div className="space-y-6 animate-fade-in">
+                                    <h3 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-4">アカウント設定</h3>
+                                    <AuthButton />
+                                    <p className="text-xs text-white/40 mt-4 leading-relaxed">
+                                        Googleアカウントでログインすると、<br />
+                                        ・苦手な言葉のブロック<br />
+                                        ・お気に入り言葉の登録<br />
+                                        などの機能が利用可能になります（実装中）。
+                                    </p>
                                 </div>
                             ) : activeTab === "words" ? (
                                 <div className="space-y-6">

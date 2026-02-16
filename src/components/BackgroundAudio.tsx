@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX, StepForward } from "lucide-react";
 
-export default function BackgroundAudio({ activeType }: { activeType: "brown-noise" | "wave" | "birds" }) {
+export default function BackgroundAudio({ activeType, setBgmSelection }: { activeType: "brown-noise" | "wave" | "birds" | "rivers" | "bonfires" | "rivers-birds", setBgmSelection: (type: any) => void }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(0.5);
     const audioContextRef = useRef<AudioContext | null>(null);
@@ -42,9 +42,15 @@ export default function BackgroundAudio({ activeType }: { activeType: "brown-noi
 
         // Update File Audio Volume
         if (fileAudioRef.current) {
-            fileAudioRef.current.volume = scaledVolume;
+            // Req 30: "Rivers" volume doubled, "Rivers-Birds" 0.33
+            let multiplier = 1.0;
+            if (activeType === "rivers") multiplier = 2.0;
+            if (activeType === "rivers-birds") multiplier = 0.33; // approx 1/3 (Half of 0.67)
+
+            // Cap at 1.0 just in case
+            fileAudioRef.current.volume = Math.min(scaledVolume * multiplier, 1.0);
         }
-    }, [volume]);
+    }, [volume, activeType]);
 
     const startAudio = (type: string) => {
         if (type === "brown-noise") {
@@ -55,7 +61,16 @@ export default function BackgroundAudio({ activeType }: { activeType: "brown-noi
     };
 
     const startFileAudio = (type: string) => {
-        const fileName = type === "wave" ? "wave.mp3" : "birds.mp3";
+        let fileName = "";
+        switch (type) {
+            case "wave": fileName = "waves.mp3"; break;
+            case "birds": fileName = "birds.mp3"; break;
+            case "rivers": fileName = "rivers.mp3"; break;
+            case "bonfires": fileName = "bonfires.mp3"; break;
+            case "rivers-birds": fileName = "rivers_birds.mp3"; break;
+            default: fileName = "waves.mp3"; break;
+        }
+
         const audio = new Audio(`/audio/${fileName}`);
         audio.loop = true; // Req 25: Loop
         audio.volume = volume * 0.5; // Scale
@@ -130,19 +145,38 @@ export default function BackgroundAudio({ activeType }: { activeType: "brown-noi
         }
     };
 
+    const cycleBgm = () => {
+        const order = ["wave", "rivers", "bonfires", "rivers-birds", "birds", "brown-noise"];
+        const currentIndex = order.indexOf(activeType);
+        const nextIndex = (currentIndex + 1) % order.length;
+        setBgmSelection(order[nextIndex] as any);
+    };
+
     return (
-        <div className="fixed bottom-[3%] left-[4%] z-40 flex flex-col-reverse items-center gap-4">
+        <div className="fixed bottom-[3%] left-6 z-[600] flex items-center gap-3 animate-fade-in pointer-events-auto touch-manipulation">
+            {/* Play/Stop Button */}
             <button
                 onClick={toggleAudio}
-                className={`w-[46px] h-[46px] flex items-center justify-center rounded-full backdrop-blur-md transition-all ${isPlaying ? "bg-white/20 text-white shadow-[0_0_15px_rgba(255,255,255,0.3)]" : "bg-white/5 text-white/50 hover:bg-white/10"
-                    }`}
-                title="BGM (再生/停止)"
+                className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white/80 hover:bg-white/20 active:scale-95 transition-all shadow-lg"
+                aria-label={isPlaying ? "環境音を停止" : "環境音を再生"}
             >
                 {isPlaying ? <Volume2 size={20} /> : <VolumeX size={20} />}
             </button>
 
+            {/* Next Track Button (Only visible when playing) */}
             {isPlaying && (
-                <div className="h-24 w-8 flex items-center justify-center -translate-y-2">
+                <button
+                    onClick={cycleBgm}
+                    className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white/80 hover:bg-white/20 active:scale-95 transition-all shadow-lg animate-fade-in"
+                    aria-label="次の環境音へ"
+                >
+                    <StepForward size={20} />
+                </button>
+            )}
+
+            {/* Volume Slider (Only visible when playing) */}
+            {isPlaying && (
+                <div className="h-10 w-24 flex items-center justify-center -translate-y-0">
                     <input
                         type="range"
                         min="0"

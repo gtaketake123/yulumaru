@@ -44,7 +44,7 @@ export default function Home() {
 
   // Content-2: BGM Selection State (Default: Wave)
   // Options: 'brown-noise' | 'wave' | 'birds' | 'rivers-birds' | 'bonfires' | 'rivers'
-  const [bgmSelection, setBgmSelection] = useState<"brown-noise" | "wave" | "birds" | "rivers-birds" | "bonfires" | "rivers">("wave");
+  const [bgmSelection, setBgmSelection] = useState<"brown-noise" | "wave" | "birds" | "rivers" | "bonfires" | "rivers-birds">("wave");
 
   // Mobile Req 10: Toggle for Word Mode Menu
   const [isWordMenuOpen, setIsWordMenuOpen] = useState(false);
