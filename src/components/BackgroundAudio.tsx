@@ -153,17 +153,32 @@ export default function BackgroundAudio({ activeType, setBgmSelection }: { activ
     };
 
     return (
-        <div className="fixed bottom-[3%] left-6 z-[600] flex items-center gap-3 animate-fade-in pointer-events-auto touch-manipulation">
-            {/* Play/Stop Button */}
+        <div className="fixed bottom-6 left-6 z-[600] flex flex-col-reverse items-center gap-4 animate-fade-in pointer-events-auto touch-manipulation">
+            {/* Play/Stop Button (Bottom) */}
             <button
                 onClick={toggleAudio}
-                className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white/80 hover:bg-white/20 active:scale-95 transition-all shadow-lg"
+                className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white/80 hover:bg-white/20 active:scale-95 transition-all shadow-lg"
                 aria-label={isPlaying ? "環境音を停止" : "環境音を再生"}
             >
-                {isPlaying ? <Volume2 size={20} /> : <VolumeX size={20} />}
+                {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
             </button>
 
-            {/* Next Track Button (Only visible when playing) */}
+            {/* Volume Slider (Middle - Vertical) */}
+            {isPlaying && (
+                <div className="w-10 h-32 flex items-center justify-center relative bg-black/20 rounded-full backdrop-blur-sm border border-white/10">
+                    <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={volume}
+                        onChange={(e) => setVolume(parseFloat(e.target.value))}
+                        className="absolute w-24 h-2 bg-white/30 rounded-lg appearance-none cursor-pointer accent-cyan-400/80 -rotate-90 shadow-lg hover:accent-cyan-300"
+                    />
+                </div>
+            )}
+
+            {/* Next Track Button (Top) */}
             {isPlaying && (
                 <button
                     onClick={cycleBgm}
@@ -172,21 +187,6 @@ export default function BackgroundAudio({ activeType, setBgmSelection }: { activ
                 >
                     <StepForward size={20} />
                 </button>
-            )}
-
-            {/* Volume Slider (Only visible when playing) */}
-            {isPlaying && (
-                <div className="h-10 w-24 flex items-center justify-center -translate-y-0">
-                    <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        value={volume}
-                        onChange={(e) => setVolume(parseFloat(e.target.value))}
-                        className="w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white -rotate-90 shadow-lg"
-                    />
-                </div>
             )}
         </div>
     );
