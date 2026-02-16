@@ -3,35 +3,74 @@
 import { useState, useEffect, useRef } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 
-export default function BackgroundAudio() {
+export default function BackgroundAudio({ activeType }: { activeType: "brown-noise" | "wave" | "birds" }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(0.5);
     const audioContextRef = useRef<AudioContext | null>(null);
     const gainNodeRef = useRef<GainNode | null>(null);
     const brownNoiseNodeRef = useRef<ScriptProcessorNode | null>(null);
+    const fileAudioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Initial setup: Default OFF.
+    // If activeType changes, we should restart playback if we are ALREADY playing.
+    // Spec: "Default BGM off... select from Brown Noise to Wave".
 
     useEffect(() => {
-
         // Cleanup on unmount
         return () => {
             stopAudio();
         };
     }, []);
 
+    // Effect: Handle Type switching while playing
     useEffect(() => {
+        if (isPlaying) {
+            // Stop current, Start new
+            stopAudioInternal(true); // Don't reset state, just stop sound
+            startAudio(activeType);
+        }
+    }, [activeType]);
+
+    // Effect: Volume Scaling (Req 24: Half range)
+    useEffect(() => {
+        const scaledVolume = volume * 0.5; // Max 0.5
+
+        // Update Brown Noise Gain
         if (gainNodeRef.current) {
-            gainNodeRef.current.gain.value = volume * 0.1; // Master volume scaling
+            gainNodeRef.current.gain.value = scaledVolume * 0.1;
+        }
+
+        // Update File Audio Volume
+        if (fileAudioRef.current) {
+            fileAudioRef.current.volume = scaledVolume;
         }
     }, [volume]);
 
-    const initAudio = () => {
+    const startAudio = (type: string) => {
+        if (type === "brown-noise") {
+            startBrownNoise();
+        } else {
+            startFileAudio(type);
+        }
+    };
+
+    const startFileAudio = (type: string) => {
+        const fileName = type === "wave" ? "wave.mp3" : "birds.mp3";
+        const audio = new Audio(`/audio/${fileName}`);
+        audio.loop = true; // Req 25: Loop
+        audio.volume = volume * 0.5; // Scale
+        audio.play().catch(e => console.error("Audio play failed", e));
+        fileAudioRef.current = audio;
+    };
+
+    const startBrownNoise = () => {
         if (!audioContextRef.current) {
             const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
             audioContextRef.current = new AudioContext();
 
             // Master Gain
             const gainNode = audioContextRef.current.createGain();
-            gainNode.gain.value = volume * 0.1;
+            gainNode.gain.value = (volume * 0.5) * 0.1; // Scale
             gainNode.connect(audioContextRef.current.destination);
             gainNodeRef.current = gainNode;
         }
@@ -39,11 +78,10 @@ export default function BackgroundAudio() {
         if (audioContextRef.current.state === "suspended") {
             audioContextRef.current.resume();
         }
-    };
 
-    const createBrownNoise = () => {
-        if (!audioContextRef.current || !gainNodeRef.current) return;
+        if (!gainNodeRef.current) return;
 
+        // Create Noise
         const bufferSize = 4096;
         const brownNoise = audioContextRef.current.createScriptProcessor(bufferSize, 1, 1);
 
@@ -54,7 +92,7 @@ export default function BackgroundAudio() {
                 const white = Math.random() * 2 - 1;
                 output[i] = (lastOut + (0.02 * white)) / 1.02;
                 lastOut = output[i];
-                output[i] *= 3.5; // Compensate for gain loss
+                output[i] *= 3.5;
             }
         };
 
@@ -62,22 +100,34 @@ export default function BackgroundAudio() {
         brownNoiseNodeRef.current = brownNoise;
     };
 
-    const toggleAudio = () => {
-        if (isPlaying) {
-            stopAudio();
-        } else {
-            initAudio();
-            createBrownNoise();
-            setIsPlaying(true);
+    const stopAudioInternal = (keepContext = false) => {
+        // Stop File
+        if (fileAudioRef.current) {
+            fileAudioRef.current.pause();
+            fileAudioRef.current = null;
         }
-    };
 
-    const stopAudio = () => {
+        // Stop Brown Noise
         if (brownNoiseNodeRef.current) {
             brownNoiseNodeRef.current.disconnect();
             brownNoiseNodeRef.current = null;
         }
+
+        // Need to keep Context alive if switching tracks? Yes.
+    };
+
+    const stopAudio = () => {
+        stopAudioInternal();
         setIsPlaying(false);
+    };
+
+    const toggleAudio = () => {
+        if (isPlaying) {
+            stopAudio();
+        } else {
+            setIsPlaying(true);
+            startAudio(activeType);
+        }
     };
 
     return (
@@ -86,7 +136,7 @@ export default function BackgroundAudio() {
                 onClick={toggleAudio}
                 className={`w-[46px] h-[46px] flex items-center justify-center rounded-full backdrop-blur-md transition-all ${isPlaying ? "bg-white/20 text-white shadow-[0_0_15px_rgba(255,255,255,0.3)]" : "bg-white/5 text-white/50 hover:bg-white/10"
                     }`}
-                title="環境音 (ブラウンノイズ)"
+                title="BGM (再生/停止)"
             >
                 {isPlaying ? <Volume2 size={20} /> : <VolumeX size={20} />}
             </button>

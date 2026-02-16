@@ -42,6 +42,10 @@ export default function Home() {
   // Req 84: Starry Animation Overlay State
   const [starVariant, setStarVariant] = useState<"none" | "blink" | "rise">("blink");
 
+  // Content-2: BGM Selection State (Default: Wave)
+  // Options: 'brown-noise' | 'wave' | 'birds' | 'rivers-birds' | 'bonfires' | 'rivers'
+  const [bgmSelection, setBgmSelection] = useState<"brown-noise" | "wave" | "birds" | "rivers-birds" | "bonfires" | "rivers">("wave");
+
   // Mobile Req 10: Toggle for Word Mode Menu
   const [isWordMenuOpen, setIsWordMenuOpen] = useState(false);
 
@@ -263,7 +267,7 @@ export default function Home() {
         }}
       />
 
-      <BackgroundAudio />
+      <BackgroundAudio activeType={bgmSelection} setBgmSelection={setBgmSelection} />
 
       {/* Req 84: Starry Sky Overlay (Togglable for ALL themes) - Needs to be above blurred bg but below content */}
       {starVariant !== "none" && (
@@ -302,6 +306,7 @@ export default function Home() {
           blurSharpness={blurSharpness} setBlurSharpness={setBlurSharpness}
           blurFantasy={blurFantasy} setBlurFantasy={setBlurFantasy}
           isPaused={isPaused} togglePause={togglePause}
+          bgmSelection={bgmSelection} setBgmSelection={setBgmSelection}
         />
 
         {/* Req 99-7: Star Effect Toggle Button (White Circle 1) */}
@@ -329,7 +334,7 @@ export default function Home() {
         {/* Mobile-19: Hidden Access Counter Trigger (Pointer Events Auto) */}
         <h1
           onClick={handleSecretClick}
-          className="hidden md:block min-h-[700px]:block text-lg md:text-xl font-medium tracking-[0.2em] opacity-80 uppercase drop-shadow-md transition-opacity duration-300 font-serif pointer-events-auto cursor-default select-none active:scale-95 transition-transform"
+          className="hidden md:block min-h-[700px]:block text-lg md:text-xl font-medium tracking-[0.2em] opacity-80 uppercase drop-shadow-md transition-opacity duration-300 font-serif pointer-events-auto cursor-default select-none"
         >
           ~ ゆるまる ~
         </h1>
@@ -376,24 +381,22 @@ export default function Home() {
         )}
 
         {/* Req 99-6: Word Mode Dropdown at Bottom - Redesigned C4-5 (Portal Fix C4-9) */}
+        {/* Mobile-20: PC Layout Alignment - Match BreathingGuide Controls structure */}
         {mounted ? createPortal(
           <div
-            className="pointer-events-auto fixed z-[300]"
-            style={{
-              bottom: '10.5%',
-              left: '54.6%'
-            }}
+            className="fixed z-[300] bottom-[10.5%] 
+              left-[54.6%] 
+              md:left-1/2 md:-translate-x-1/2 md:ml-5 md:flex md:items-center md:justify-center md:gap-8 md:w-full md:max-w-lg md:px-4 md:pointer-events-none"
           >
-            <div className="relative">
+            {/* Spacer to match Play/Reset buttons width (44+44+12 = 100px approx + buffer) */}
+            {/* BreathingGuide: Play(p-3->~46px) + Gap(3) + Reset(~46px). Total ~104px? */}
+            <div className="hidden md:block w-[104px] shrink-0" />
+
+            <div className="relative pointer-events-auto">
               <button
                 onClick={() => setIsWordMenuOpen(!isWordMenuOpen)}
-                className="group flex items-center justify-between px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md transition-all text-sm font-medium border border-white/10 shadow-lg text-white/80 hover:text-white"
-                style={{ width: '140px' }} // Match width of previous container roughly or Breathing button? User said 54.6% position. 
-              // Wait, user said "Right edge nicely aligned". If left is 54.6% (215px) and width is 182px, Right is 397px. Screen is 393px. Overflow!
-              // Breathing Mode Button (Req 15 prev): Left 54.6% (215px), Width 140px. Right Edge 355px.
-              // User said "Right edge aligned cleanly". This likely means "Align Right with Breathing Button".
-              // If Dropdown is also Left 54.6% and Width 140px, they align.
-              // I will set width to 140px to match Breathing Mode Button.
+                className="group flex items-center justify-between px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md transition-all text-sm font-medium border border-white/10 shadow-lg text-white/80 hover:text-white min-w-[140px]"
+                style={{ width: '140px' }}
               >
                 <span className="truncate">
                   {wordMode === "breath-sync" && "呼吸連動"}

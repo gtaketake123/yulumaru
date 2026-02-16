@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Settings, X, Heart, Circle, CloudRain, MousePointer, Maximize, Eye, EyeOff, ArrowUp, ArrowRight, TrendingUp, Play, Pause } from "lucide-react";
 
-type Tab = "words" | "background";
+type Tab = "words" | "background" | "audio";
 
 interface SettingsMenuProps {
     wordMode: string;
@@ -39,6 +39,8 @@ interface SettingsMenuProps {
     setBlurFantasy: (val: number) => void;
     isPaused: boolean;
     togglePause: () => void;
+    bgmSelection: "brown-noise" | "wave" | "birds" | "rivers-birds" | "bonfires" | "rivers";
+    setBgmSelection: (val: "brown-noise" | "wave" | "birds" | "rivers-birds" | "bonfires" | "rivers") => void;
 }
 
 export default function SettingsMenu({
@@ -74,6 +76,8 @@ export default function SettingsMenu({
     setBlurFantasy,
     isPaused,
     togglePause,
+    bgmSelection,
+    setBgmSelection,
 }: SettingsMenuProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<Tab>("words");
@@ -160,10 +164,53 @@ export default function SettingsMenu({
                             >
                                 背景・色
                             </button>
+                            <button
+                                onClick={() => setActiveTab("audio")}
+                                className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === "audio" ? "bg-white/10 text-white" : "text-white/50 hover:text-white/80"
+                                    }`}
+                            >
+                                BGM
+                            </button>
                         </div>
 
                         <div className="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
-                            {activeTab === "words" ? (
+                            {activeTab === "audio" ? (
+                                <div className="space-y-6 animate-fade-in">
+                                    <div>
+                                        <h3 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-4">環境音の選択</h3>
+                                        <div className="grid grid-cols-1 gap-3">
+                                            {[
+                                                { id: "wave", label: "波音", desc: "穏やかな波の音" },
+                                                { id: "birds", label: "鳥のさえずり", desc: "森の中の静寂" },
+                                                { id: "rivers-birds", label: "川と鳥の囀り", desc: "清流と鳥の声" },
+                                                { id: "bonfires", label: "焚火", desc: "パチパチとした安らぎ" },
+                                                { id: "rivers", label: "川のせせらぎ", desc: "流れる水の音" },
+                                                { id: "brown-noise", label: "ブラウンノイズ", desc: "深い集中 (生成音)" },
+                                            ].map((bgm) => (
+                                                <button
+                                                    key={bgm.id}
+                                                    onClick={() => setBgmSelection(bgm.id as any)}
+                                                    className={`p-4 rounded-xl border text-left transition-all flex items-center justify-between ${bgmSelection === bgm.id
+                                                        ? "bg-white/20 border-white/40 shadow-md"
+                                                        : "bg-white/5 border-transparent hover:bg-white/10"
+                                                        }`}
+                                                >
+                                                    <div>
+                                                        <span className="text-sm font-bold block">{bgm.label}</span>
+                                                        <span className="text-xs text-white/60">{bgm.desc}</span>
+                                                    </div>
+                                                    {bgmSelection === bgm.id && (
+                                                        <div className="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)]" />
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <p className="text-xs text-white/40 mt-4 text-center">
+                                            ※左下のボタンでBGM切替・音量調整ができます
+                                        </p>
+                                    </div>
+                                </div>
+                            ) : activeTab === "words" ? (
                                 <div className="space-y-6">
 
                                     <div>
