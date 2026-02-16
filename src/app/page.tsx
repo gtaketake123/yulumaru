@@ -199,6 +199,55 @@ export default function Home() {
   // Req 98-8: When Paused, force STRICT 100% (no blur), otherwise use mapped 90% cap
   const effectiveFocus = isPaused ? 100 : blurSharpness * 0.9;
 
+  // Req 19: Hidden Access Counter
+  const [clickCount, setClickCount] = useState(0);
+  const [clickTimer, setClickTimer] = useState<NodeJS.Timeout | null>(null);
+
+  // Increment view count on mount
+  useEffect(() => {
+    const incrementViews = async () => {
+      // Prevent double counting in Strict Mode or re-renders
+      const sessionKey = `viewed_${new Date().toDateString()}`; // Simple daily unique check per session? Or just strict mount?
+      // User asked for "cumulative access", strict mount is better for "hits".
+      // But StrictMode fires twice. We use feature detection or ref.
+      // Actually, simple session storage key check for "visited_session" 
+      if (!sessionStorage.getItem("visited_session")) {
+        try {
+          await fetch('/api/analytics', { method: 'POST' });
+          sessionStorage.setItem("visited_session", "true");
+        } catch (e) {
+          console.error("Analytics error", e);
+        }
+      }
+    };
+    incrementViews();
+  }, []);
+
+  const handleSecretClick = async () => {
+    const newCount = clickCount + 1;
+    setClickCount(newCount);
+
+    if (clickTimer) clearTimeout(clickTimer);
+
+    // Reset count if no click within 1 second
+    const timer = setTimeout(() => {
+      setClickCount(0);
+    }, 1000);
+    setClickTimer(timer);
+
+    if (newCount === 5) {
+      try {
+        const res = await fetch('/api/analytics');
+        const data = await res.json();
+        alert(`Developer Info:\nTotal Views: ${data.views}`);
+      } catch (e) {
+        alert("Failed to fetch analytics");
+      }
+      setClickCount(0);
+      if (clickTimer) clearTimeout(clickTimer);
+    }
+  };
+
   return (
     <main className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden text-white">
 
@@ -277,7 +326,11 @@ export default function Home() {
       <header className="absolute top-0 w-full flex flex-col items-center pt-8 z-30 pointer-events-none">
         {/* Req 99-5: Strict visibility: Only show on screens tall enough and wide enough to prevent overlap */}
         {/* Req 99-8: Rename to "~ ゆるまる ~" */}
-        <h1 className="hidden md:block min-h-[700px]:block text-lg md:text-xl font-medium tracking-[0.2em] opacity-80 uppercase drop-shadow-md transition-opacity duration-300 font-serif">
+        {/* Mobile-19: Hidden Access Counter Trigger (Pointer Events Auto) */}
+        <h1
+          onClick={handleSecretClick}
+          className="hidden md:block min-h-[700px]:block text-lg md:text-xl font-medium tracking-[0.2em] opacity-80 uppercase drop-shadow-md transition-opacity duration-300 font-serif pointer-events-auto cursor-default select-none active:scale-95 transition-transform"
+        >
           ~ ゆるまる ~
         </h1>
       </header>
