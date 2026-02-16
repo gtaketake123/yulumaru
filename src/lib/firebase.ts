@@ -12,8 +12,13 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase (SSR safe)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Build Safety: If keys are missing (during Vercel build), don't crash.
+const app = (getApps().length === 0 && firebaseConfig.apiKey)
+    ? initializeApp(firebaseConfig)
+    : getApps()[0];
+
+// Export auth/db as null if app failed to init
+const auth = app ? getAuth(app) : null;
+const db = app ? getFirestore(app) : null;
 
 export { auth, db };
