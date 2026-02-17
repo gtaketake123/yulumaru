@@ -227,9 +227,9 @@ export default function PositiveAffirmations({
                 {createPortal(
                     <button
                         onClick={handleManualClick}
-                        className="fixed bottom-[11.5%] left-[10.0%] md:left-1/2 md:-translate-x-1/2 flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto z-50"
+                        className="fixed bottom-[11.5%] left-[10.0%] md:left-[calc(50%_-_130px)] flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto z-50 shadow-lg text-sm"
                     >
-                        <RefreshCw className="group-hover:rotate-180 transition-transform duration-500" size={20} />
+                        <RefreshCw className="group-hover:rotate-180 transition-transform duration-500" size={16} />
                         <span>次の言葉</span>
                     </button>,
                     document.body
