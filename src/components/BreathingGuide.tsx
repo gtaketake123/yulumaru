@@ -180,7 +180,7 @@ export default function BreathingGuide({
     const Controls = (
         <>
             {/* Controls Header - Redesigned C4-5: Bottom Command Center (Class-based via Portal) */}
-            <div className="fixed bottom-[3%] left-1/2 -translate-x-1/2 ml-5 flex items-center justify-center gap-8 w-full max-w-lg px-4 z-40 pointer-events-auto">
+            <div className="fixed bottom-[4%] left-1/2 -translate-x-1/2 ml-5 flex items-center justify-center gap-3 w-full max-w-lg px-4 z-40 pointer-events-auto">
                 <div className="flex gap-3">
                     <button
                         onClick={togglePlay}

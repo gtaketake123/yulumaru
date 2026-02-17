@@ -7,7 +7,7 @@ import BreathingGuide from "@/components/BreathingGuide";
 import SettingsMenu from "@/components/SettingsMenu";
 import BackgroundAudio from "@/components/BackgroundAudio";
 import StarryBackground from "@/components/StarryBackground";
-import { ChevronDown, RefreshCw, Settings2, Palette, Circle, Sparkles, Rocket } from "lucide-react";
+import { ChevronDown, RefreshCw, Settings2, Palette, Circle, Sparkles, Rocket, Heart } from "lucide-react";
 
 export default function Home() {
   const [activePhase, setActivePhase] = useState("inhale");
@@ -384,27 +384,27 @@ export default function Home() {
         {/* Mobile-20: PC Layout Alignment - Match BreathingGuide Controls structure */}
         {mounted ? createPortal(
           <div
-            className="fixed z-[300] bottom-[10.5%] 
+            className="fixed z-[300] bottom-[11.5%] 
               left-[54.6%] 
               md:left-1/2 md:-translate-x-1/2 md:ml-5 md:flex md:items-center md:justify-center md:gap-8 md:w-full md:max-w-lg md:px-4 md:pointer-events-none"
           >
-            {/* Spacer to match Play/Reset buttons width (44+44+12 = 100px approx + buffer) */}
-            {/* BreathingGuide: Play(p-3->~46px) + Gap(3) + Reset(~46px). Total ~104px? */}
-            <div className="hidden md:block w-[104px] shrink-0" />
+            {/* Spacer to match Play/Reset buttons width (44+44+8 = 96px approx + buffer) */}
+            {/* BreathingGuide: Play(p-3->~46px) + Gap(2->8px) + Reset(~46px). Total ~100px */}
+            <div className="hidden md:block w-[100px] shrink-0" />
 
             <div className="relative pointer-events-auto">
               <button
                 onClick={() => setIsWordMenuOpen(!isWordMenuOpen)}
-                className="group flex items-center justify-between px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md transition-all text-sm font-medium border border-white/10 shadow-lg text-white/80 hover:text-white min-w-[140px]"
-                style={{ width: '140px' }}
+                className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 shadow-lg min-w-[140px] justify-center"
               >
-                <span className="truncate">
+                <Heart size={20} />
+                <span className="text-sm font-medium whitespace-nowrap">
                   {wordMode === "breath-sync" && "呼吸連動"}
                   {wordMode === "random" && "手動"}
                   {wordMode === "falling" && "言葉の雨"}
                   {wordMode === "inside" && "サークル内"}
                 </span>
-                <ChevronDown size={14} className={`opacity-70 transition-transform ${isWordMenuOpen ? "rotate-180" : ""}`} />
+                <ChevronDown size={16} className={`ml-1 opacity-70 transition-transform ${isWordMenuOpen ? "rotate-180" : ""}`} />
 
                 {/* Dropdown Menu - Show on State True */}
                 <div className={`absolute bottom-full left-0 w-full mb-2 py-2 bg-[#1a1a2e]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl transition-all transform origin-bottom overflow-hidden z-[301] ${isWordMenuOpen ? "opacity-100 visible scale-100" : "opacity-0 invisible scale-95"}`}>

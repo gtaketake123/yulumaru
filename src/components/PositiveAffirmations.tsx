@@ -211,7 +211,13 @@ export default function PositiveAffirmations({
                         transition={{ duration: 0.8 }}
                         className="text-center px-4 max-w-2xl"
                     >
-                        <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)] leading-relaxed p-4">
+                        <p
+                            className="text-2xl md:text-3xl font-bold leading-relaxed p-4"
+                            style={{
+                                color: colorful === true ? `hsl(${Math.random() * 360}, 70%, 70%)` : colorful === "black" ? "#000000" : "#ffffff",
+                                textShadow: "0 4px 10px rgba(255,255,255,0.2)"
+                            }}
+                        >
                             {currentMessage}
                         </p>
                     </motion.div>
@@ -221,7 +227,7 @@ export default function PositiveAffirmations({
                 {createPortal(
                     <button
                         onClick={handleManualClick}
-                        className="fixed bottom-[10.5%] left-[10.0%] flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto z-50"
+                        className="fixed bottom-[11.5%] left-[10.0%] md:left-1/2 md:-translate-x-1/2 flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto z-50"
                     >
                         <RefreshCw className="group-hover:rotate-180 transition-transform duration-500" size={20} />
                         <span>次の言葉</span>
@@ -245,7 +251,14 @@ export default function PositiveAffirmations({
                     // Req 75: Ensure checking full width availability
                     className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 p-4"
                 >
-                    <p className="text-xs md:text-sm font-bold text-white/95 text-center leading-relaxed drop-shadow-md w-[90%]" style={{ textWrap: "balance" }}>
+                    <p
+                        className="text-xs md:text-sm font-bold text-center leading-relaxed w-[90%]"
+                        style={{
+                            textWrap: "balance",
+                            color: colorful === true ? `hsl(${Math.random() * 360}, 70%, 70%)` : colorful === "black" ? "#000000" : "#ffffff",
+                            textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6)"
+                        }}
+                    >
                         {currentMessage}
                     </p>
                 </motion.div>
@@ -264,7 +277,13 @@ export default function PositiveAffirmations({
                 transition={{ duration: 1.0 }}
                 className="text-center px-4 max-w-2xl z-20 -translate-y-[30px]"
             >
-                <p className="text-xl md:text-3xl font-bold text-white md:bg-clip-text md:text-transparent md:bg-gradient-to-r md:from-white md:to-white/80 drop-shadow-lg md:drop-shadow-[0_4px_10px_rgba(255,255,255,0.3)] leading-relaxed py-2">
+                <p
+                    className="text-xl md:text-3xl font-bold leading-relaxed py-2"
+                    style={{
+                        color: colorful === true ? `hsl(${Math.random() * 360}, 70%, 70%)` : colorful === "black" ? "#000000" : "#ffffff",
+                        textShadow: "0 4px 10px rgba(255,255,255,0.3)"
+                    }}
+                >
                     {currentMessage}
                 </p>
             </motion.div>

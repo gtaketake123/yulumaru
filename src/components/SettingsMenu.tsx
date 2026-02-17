@@ -405,6 +405,45 @@ export default function SettingsMenu({
                                         </div>
                                     </div>
 
+
+                                    {/* Text Color Settings - Available for ALL modes */}
+                                    <div className="space-y-4 animate-fade-in">
+                                        <div className="h-px bg-white/10" />
+                                        <div>
+                                            <h3 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-4">文字の色</h3>
+                                            <div className="grid grid-cols-3 gap-2">
+                                                <button
+                                                    onClick={() => setFallingColorful(true)}
+                                                    className={`px-3 py-2 rounded-lg text-xs transition-all ${fallingColorful === true
+                                                        ? "bg-white/20 text-white border border-white/30"
+                                                        : "bg-white/5 text-white/50 border border-white/10"
+                                                        }`}
+                                                >
+                                                    カラフル
+                                                </button>
+                                                <button
+                                                    onClick={() => setFallingColorful(false)}
+                                                    className={`px-3 py-2 rounded-lg text-xs transition-all ${fallingColorful === false
+                                                        ? "bg-white/20 text-white border border-white/30"
+                                                        : "bg-white/5 text-white/50 border border-white/10"
+                                                        }`}
+                                                >
+                                                    白
+                                                </button>
+                                                <button
+                                                    onClick={() => setFallingColorful("black")}
+                                                    className={`px-3 py-2 rounded-lg text-xs transition-all ${fallingColorful === "black"
+                                                        ? "bg-white/20 text-white border border-white/30"
+                                                        : "bg-white/5 text-white/50 border border-white/10"
+                                                        }`}
+                                                >
+                                                    黒
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Falling-specific settings - Only visible in Falling mode */}
                                     {wordMode === "falling" && (
                                         <div className="space-y-4 animate-fade-in">
                                             <div className="h-px bg-white/10" />
@@ -436,39 +475,6 @@ export default function SettingsMenu({
                                                             onChange={(e) => setFallingDensity(parseInt(e.target.value))}
                                                             className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white"
                                                         />
-                                                    </div>
-
-                                                    <div>
-                                                        <div className="text-xs text-white/50 mb-2">カラー選択</div>
-                                                        <div className="grid grid-cols-3 gap-2">
-                                                            <button
-                                                                onClick={() => setFallingColorful(true)}
-                                                                className={`px-3 py-2 rounded-lg text-xs transition-all ${fallingColorful === true
-                                                                    ? "bg-white/20 text-white border border-white/30"
-                                                                    : "bg-white/5 text-white/50 border border-white/10"
-                                                                    }`}
-                                                            >
-                                                                カラフル
-                                                            </button>
-                                                            <button
-                                                                onClick={() => setFallingColorful(false)}
-                                                                className={`px-3 py-2 rounded-lg text-xs transition-all ${fallingColorful === false
-                                                                    ? "bg-white/20 text-white border border-white/30"
-                                                                    : "bg-white/5 text-white/50 border border-white/10"
-                                                                    }`}
-                                                            >
-                                                                白
-                                                            </button>
-                                                            <button
-                                                                onClick={() => setFallingColorful("black")}
-                                                                className={`px-3 py-2 rounded-lg text-xs transition-all ${fallingColorful === "black"
-                                                                    ? "bg-white/20 text-white border border-white/30"
-                                                                    : "bg-white/5 text-white/50 border border-white/10"
-                                                                    }`}
-                                                            >
-                                                                黒
-                                                            </button>
-                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
