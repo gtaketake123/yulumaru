@@ -66,12 +66,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const signInWithGoogle = async () => {
-        if (!auth) return;
+        if (!auth) {
+            alert("エラー: Firebaseの設定が読み込めていません。\nVercelの環境変数 (API Keyなど) が正しく設定されているか確認してください。");
+            return;
+        }
         const provider = new GoogleAuthProvider();
         try {
             await signInWithPopup(auth, provider);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error signing in with Google", error);
+            alert(`ログインエラーが発生しました:\n${error.message}\n(Code: ${error.code})`);
         }
     };
 
