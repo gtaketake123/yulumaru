@@ -16,6 +16,8 @@ interface PositiveAffirmationsProps {
     colorful?: boolean | "black";
 }
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function PositiveAffirmations({
     mode = "breath-sync",
     trigger,
@@ -25,14 +27,44 @@ export default function PositiveAffirmations({
     density = 5,
     colorful = false
 }: PositiveAffirmationsProps) {
-    // Initialize with a message immediately
-    const [currentMessage, setCurrentMessage] = useState(() => {
-        if (messages.length > 0) {
-            const randomIndex = Math.floor(Math.random() * messages.length);
-            return messages[randomIndex].text;
+    const { userData } = useAuth();
+
+    // Helper: Get filtered messages based on user preferences
+    const getFilteredMessages = useCallback(() => {
+        let available = messages.map(m => m.text);
+
+        if (userData) {
+            // 1. Remove Blocked Words
+            if (userData.blockedWords && userData.blockedWords.length > 0) {
+                available = available.filter(msg => !userData.blockedWords.includes(msg));
+            }
+
+            // 2. Prioritize Favorites (Mix them in more frequently)
+            // Strategy: Add favorites to the pool X times to increase probability
+            if (userData.favoriteWords && userData.favoriteWords.length > 0) {
+                const favorites = userData.favoriteWords.filter(w => !userData.blockedWords?.includes(w));
+                // Add favorites 3 times to make them appear more often
+                for (let i = 0; i < 3; i++) {
+                    available = [...available, ...favorites];
+                }
+            }
         }
-        return "";
-    });
+
+        // Safety: If all words blocked, return fallback
+        if (available.length === 0) return ["呼吸を整えましょう", "リラックスして"];
+        return available;
+    }, [userData]);
+
+    // Initialize with a message immediately
+    const [currentMessage, setCurrentMessage] = useState("");
+
+    // Effect to set initial message AFTER component mounts (client-side only to match filtered list)
+    useEffect(() => {
+        const pool = getFilteredMessages();
+        const randomIndex = Math.floor(Math.random() * pool.length);
+        setCurrentMessage(pool[randomIndex]);
+    }, [getFilteredMessages]); // Re-run if filtering changes
+
     const [fallingMessages, setFallingMessages] = useState<{ id: number; text: string; left: number; duration: number, size?: number, opacity?: number, color?: string }[]>([]);
     const [isClient, setIsClient] = useState(false);
 
@@ -40,22 +72,23 @@ export default function PositiveAffirmations({
 
     // Helper: Select new quote (Req 41/59: Ensure change using filtering)
     const selectNewQuote = useCallback(() => {
-        if (messages.length === 0) return;
+        const pool = getFilteredMessages();
+        if (pool.length === 0) return;
 
         setCurrentMessage(prev => {
-            // Filter out the current message to guarantee a change
-            const candidates = messages.filter(m => m.text !== prev);
+            // Filter out the current message to guarantee a change (if possible)
+            const candidates = pool.filter(text => text !== prev);
 
             // If no candidates (only 1 message exists), return it; otherwise pick random
             if (candidates.length === 0) return prev;
 
             const randomIndex = Math.floor(Math.random() * candidates.length);
-            const newMessage = candidates[randomIndex].text;
+            const newMessage = candidates[randomIndex];
 
             if (onQuoteChange) onQuoteChange(newMessage);
             return newMessage;
         });
-    }, [onQuoteChange]);
+    }, [onQuoteChange, getFilteredMessages]);
 
     useEffect(() => {
         setIsClient(true);
@@ -88,7 +121,8 @@ export default function PositiveAffirmations({
         const interval = setInterval(() => {
             setFallingMessages(prev => {
                 const baseDuration = Math.max(5, 25 - (speed * 2));
-                const randomIndex = Math.floor(Math.random() * messages.length);
+                const pool = getFilteredMessages();
+                const randomIndex = Math.floor(Math.random() * pool.length);
 
                 const getRandomColor = () => {
                     const colors = [
@@ -102,7 +136,7 @@ export default function PositiveAffirmations({
 
                 const newMessage = {
                     id: Date.now(),
-                    text: messages[randomIndex].text,
+                    text: pool[randomIndex],
                     // Req 80-Fixed: Cover full width (5vw to 95vw) per C5-2
                     left: Math.random() * 90 + 5,
                     duration: baseDuration + (Math.random() * 5),
@@ -115,7 +149,7 @@ export default function PositiveAffirmations({
         }, intervalTime);
 
         return () => clearInterval(interval);
-    }, [mode, speed, density, colorful]);
+    }, [mode, speed, density, colorful, getFilteredMessages]);
 
 
     // Render Logic

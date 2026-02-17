@@ -48,3 +48,9 @@ export const getUserData = async (uid: string) => {
     }
     return null;
 };
+// ユーザーデータの一部を更新
+export const updateUserFields = async (uid: string, data: Partial<UserData>) => {
+    if (!db) return;
+    const userRef = doc(db, "users", uid);
+    await updateDoc(userRef, data);
+};

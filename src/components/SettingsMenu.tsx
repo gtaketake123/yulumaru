@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Settings, X, Heart, Circle, CloudRain, MousePointer, Maximize, Eye, EyeOff, ArrowUp, ArrowRight, TrendingUp, Play, Pause, User, Volume2, Cloud, Music, Moon, Droplets, Flame, Bird, TreePine, Feather } from "lucide-react";
+import { Settings, X, Heart, Circle, CloudRain, MousePointer, Maximize, Eye, EyeOff, ArrowUp, ArrowRight, TrendingUp, Play, Pause, User, Volume2, Cloud, Music, Moon, Droplets, Flame, Bird, TreePine, Feather, Plus, Trash2, Star, Ban } from "lucide-react";
 import AuthButton from "./AuthButton";
+import { useAuth } from "@/context/AuthContext";
+import { updateUserFields } from "@/lib/firestore";
 
 type Tab = "words" | "background" | "audio" | "account";
 
@@ -83,6 +85,59 @@ export default function SettingsMenu({
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<Tab>("words");
     const [mounted, setMounted] = useState(false);
+
+    // Auth & User Data
+    const { user, userData, refreshUserData } = useAuth();
+    const [inputBlocked, setInputBlocked] = useState("");
+    const [inputFavorite, setInputFavorite] = useState("");
+
+    const handleAddBlocked = async () => {
+        if (!user || !userData || !inputBlocked.trim()) return;
+        const newWords = [...(userData.blockedWords || []), inputBlocked.trim()];
+        // Optimistic update? Or wait for sync? Sync is better but requires context update.
+        // Actually AuthContext syncs on login/load. 
+        // We should manually update local state or rely on real-time listener?
+        // Current AuthContext uses `onAuthStateChanged` which is for Auth object.
+        // It DOES NOT listen to Firestore changes in real-time.
+        // So we should ideally re-fetch or optimistically update.
+        // For now, let's just push to Firestore.
+        // AND we might need a way to refresh context? 
+        // Or just let the user reload?
+        // Let's implement Optimistic UI locally or simple approach first.
+
+        await updateUserFields(user.uid, { blockedWords: newWords });
+        setInputBlocked("");
+        // Note: Code should handle showing the new data. 
+        // Since AuthContext doesn't subscribe to Firestore, the UI won't update automatically 
+        // unless we update the `userData` in context or fetch again.
+        // A simple reload of page works, or let's assume we might need a context refresh method later.
+        // Actually, user expects it to appear.
+        // I'll update the Context Logic in next step if needed.
+        await refreshUserData();
+    };
+
+    const handleRemoveBlocked = async (word: string) => {
+        if (!user || !userData) return;
+        const newWords = (userData.blockedWords || []).filter(w => w !== word);
+        await updateUserFields(user.uid, { blockedWords: newWords });
+        // Same refresh issue.
+        await refreshUserData();
+    };
+
+    const handleAddFavorite = async () => {
+        if (!user || !userData || !inputFavorite.trim()) return;
+        const newWords = [...(userData.favoriteWords || []), inputFavorite.trim()];
+        await updateUserFields(user.uid, { favoriteWords: newWords });
+        setInputFavorite("");
+        await refreshUserData();
+    };
+
+    const handleRemoveFavorite = async (word: string) => {
+        if (!user || !userData) return;
+        const newWords = (userData.favoriteWords || []).filter(w => w !== word);
+        await updateUserFields(user.uid, { favoriteWords: newWords });
+        await refreshUserData();
+    };
 
     useEffect(() => {
         setMounted(true);
@@ -227,12 +282,93 @@ export default function SettingsMenu({
                                 <div className="space-y-6 animate-fade-in">
                                     <h3 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-4">アカウント設定</h3>
                                     <AuthButton />
-                                    <p className="text-xs text-white/40 mt-4 leading-relaxed">
-                                        Googleアカウントでログインすると、<br />
-                                        ・苦手な言葉のブロック<br />
-                                        ・お気に入り言葉の登録<br />
-                                        などの機能が利用可能になります（実装中）。
-                                    </p>
+
+                                    {user && userData ? (
+                                        <div className="space-y-6 mt-6 animate-fade-in">
+                                            {/* Blocked Words Section */}
+                                            <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                                                <div className="flex items-center gap-2 mb-3 text-white/70">
+                                                    <Ban size={16} className="text-red-400" />
+                                                    <span className="text-sm font-bold">苦手な言葉（ブロック）</span>
+                                                </div>
+                                                <div className="flex gap-2 mb-3">
+                                                    <input
+                                                        type="text"
+                                                        value={inputBlocked}
+                                                        onChange={(e) => setInputBlocked(e.target.value)}
+                                                        placeholder="言葉を入力..."
+                                                        className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                        onKeyDown={(e) => e.key === "Enter" && handleAddBlocked()}
+                                                    />
+                                                    <button
+                                                        onClick={handleAddBlocked}
+                                                        disabled={!inputBlocked.trim()}
+                                                        className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50"
+                                                    >
+                                                        <Plus size={18} />
+                                                    </button>
+                                                </div>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {userData.blockedWords?.length > 0 ? (
+                                                        userData.blockedWords.map((word, i) => (
+                                                            <div key={i} className="flex items-center gap-1 bg-red-500/10 border border-red-500/20 px-2 py-1 rounded text-xs text-red-200">
+                                                                <span>{word}</span>
+                                                                <button onClick={() => handleRemoveBlocked(word)} className="hover:text-white ml-1">
+                                                                    <X size={12} />
+                                                                </button>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <span className="text-xs text-white/30">登録なし</span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Favorite Words Section */}
+                                            <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                                                <div className="flex items-center gap-2 mb-3 text-white/70">
+                                                    <Star size={16} className="text-yellow-400" />
+                                                    <span className="text-sm font-bold">お気に入りの言葉</span>
+                                                </div>
+                                                <div className="flex gap-2 mb-3">
+                                                    <input
+                                                        type="text"
+                                                        value={inputFavorite}
+                                                        onChange={(e) => setInputFavorite(e.target.value)}
+                                                        placeholder="言葉を入力..."
+                                                        className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                        onKeyDown={(e) => e.key === "Enter" && handleAddFavorite()}
+                                                    />
+                                                    <button
+                                                        onClick={handleAddFavorite}
+                                                        disabled={!inputFavorite.trim()}
+                                                        className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50"
+                                                    >
+                                                        <Plus size={18} />
+                                                    </button>
+                                                </div>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {userData.favoriteWords?.length > 0 ? (
+                                                        userData.favoriteWords.map((word, i) => (
+                                                            <div key={i} className="flex items-center gap-1 bg-yellow-500/10 border border-yellow-500/20 px-2 py-1 rounded text-xs text-yellow-200">
+                                                                <span>{word}</span>
+                                                                <button onClick={() => handleRemoveFavorite(word)} className="hover:text-white ml-1">
+                                                                    <X size={12} />
+                                                                </button>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <span className="text-xs text-white/30">登録なし</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-xs text-white/40 mt-4 leading-relaxed bg-white/5 p-4 rounded-xl border border-white/5">
+                                            Googleログインすると、<br />
+                                            苦手な言葉のブロックや、お気に入りの言葉を登録してカスタマイズできます。
+                                        </p>
+                                    )}
                                 </div>
                             ) : activeTab === "words" ? (
                                 <div className="space-y-6">

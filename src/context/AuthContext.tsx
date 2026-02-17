@@ -14,10 +14,11 @@ import { UserData } from "@/types/user";
 
 interface AuthContextType {
     user: User | null;
-    userData: UserData | null; // Added Firestore Data
+    userData: UserData | null;
     loading: boolean;
     signInWithGoogle: () => Promise<void>;
     logout: () => Promise<void>;
+    refreshUserData: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextType>({
     loading: true,
     signInWithGoogle: async () => { },
     logout: async () => { },
+    refreshUserData: async () => { },
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -34,6 +36,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [userData, setUserData] = useState<UserData | null>(null);
     const [loading, setLoading] = useState(true);
+
+    // Helper to refresh data manually
+    const refreshUserData = async () => {
+        if (!user) return;
+        const data = await getUserData(user.uid);
+        if (data) setUserData(data);
+    };
 
     useEffect(() => {
         if (!auth) {
@@ -76,7 +85,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, userData, loading, signInWithGoogle, logout }}>
+        <AuthContext.Provider value={{ user, userData, loading, signInWithGoogle, logout, refreshUserData }}>
             {children}
         </AuthContext.Provider>
     );
