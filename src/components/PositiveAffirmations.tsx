@@ -14,10 +14,6 @@ interface PositiveAffirmationsProps {
     speed?: number;
     density?: number;
     colorful?: boolean | "black";
-    /** For "inside" mode: Breathing scale factor (injected by BreathingGuide) */
-    breathingScale?: number;
-    /** For "inside" mode: Current breathing phase duration (injected by BreathingGuide) */
-    phaseDuration?: number;
 }
 
 import { useAuth } from "@/context/AuthContext";
@@ -29,9 +25,7 @@ export default function PositiveAffirmations({
     enableTTS = false,
     speed = 5,
     density = 5,
-    colorful = false,
-    breathingScale,
-    phaseDuration
+    colorful = false
 }: PositiveAffirmationsProps) {
     const { userData } = useAuth();
 
@@ -246,9 +240,6 @@ export default function PositiveAffirmations({
 
     // Mode: Inside
     if (mode === "inside") {
-        const baseFontSize = 0.875; // Base size in rem (text-sm)
-        const scaledFontSize = breathingScale ? breathingScale * baseFontSize : baseFontSize;
-
         return (
             <AnimatePresence mode="wait">
                 <motion.div
@@ -259,17 +250,15 @@ export default function PositiveAffirmations({
                     transition={{ duration: 0.5 }}
                     className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 p-4"
                 >
-                    <motion.p
-                        className="font-bold text-center leading-relaxed w-[90%]"
-                        animate={{ fontSize: `${scaledFontSize}rem` }}
-                        transition={{ duration: phaseDuration || 1, ease: "easeInOut" }}
+                    <p
+                        className="text-xs md:text-sm font-bold text-center leading-relaxed w-[90%]"
                         style={{
                             textWrap: "balance",
                             color: colorful === true ? `hsl(${Math.random() * 360}, 70%, 70%)` : colorful === "black" ? "#000000" : "#ffffff",
                         }}
                     >
                         {currentMessage}
-                    </motion.p>
+                    </p>
                 </motion.div>
             </AnimatePresence>
         );

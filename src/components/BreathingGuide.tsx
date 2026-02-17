@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import React from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wind, Play, Pause, RotateCcw, Settings, X } from "lucide-react";
@@ -282,21 +281,11 @@ export default function BreathingGuide({
                 />
 
                 {/* Center Content - Rendered ON TOP of the circle, NOT scaled with it (Req: Fix Blur) */}
-                {/* Req C5-6: Inject breathingScale prop for synchronized text scaling */}
-                {centerContent && (() => {
-                    const breathingScale = isPlaying
-                        ? (currentPhase.scale > 1.0 ? currentPhase.scale * baseScale : currentPhase.scale)
-                        : 1;
-                    const phaseDuration = isPlaying ? currentPhase.duration : 1;
-
-                    return (
-                        <div className="absolute inset-0 flex items-center justify-center z-10">
-                            {React.isValidElement(centerContent)
-                                ? React.cloneElement(centerContent, { breathingScale, phaseDuration } as any)
-                                : centerContent}
-                        </div>
-                    );
-                })()}
+                {centerContent && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                        {centerContent}
+                    </div>
+                )}
 
                 {/* Text Instruction - Only show if NO center content is provided (to avoid overlap) */}
                 {!centerContent && (
