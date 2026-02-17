@@ -280,9 +280,14 @@ export default function BreathingGuide({
                     }}
                     className={`w-40 h-40 rounded-full border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.15)] md:shadow-[0_0_40px_rgba(255,255,255,0.2)] md:backdrop-blur-sm flex items-center justify-center ${circleColor}`}
                     style={{ willChange: "transform" }}
-                >
-                    {centerContent}
-                </motion.div>
+                />
+
+                {/* Center Content - Rendered ON TOP of the circle, NOT scaled with it (Req: Fix Blur) */}
+                {centerContent && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                        {centerContent}
+                    </div>
+                )}
 
                 {/* Text Instruction - Only show if NO center content is provided (to avoid overlap) */}
                 {!centerContent && (

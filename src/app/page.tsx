@@ -359,6 +359,7 @@ export default function Home() {
                   <PositiveAffirmations
                     mode="inside"
                     trigger={cycleCount}
+                    colorful={fallingColorful}
                   />
                 ) : null
               }

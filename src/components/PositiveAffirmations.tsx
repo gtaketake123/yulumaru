@@ -256,7 +256,6 @@ export default function PositiveAffirmations({
                         style={{
                             textWrap: "balance",
                             color: colorful === true ? `hsl(${Math.random() * 360}, 70%, 70%)` : colorful === "black" ? "#000000" : "#ffffff",
-                            textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6)"
                         }}
                     >
                         {currentMessage}
