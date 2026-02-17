@@ -29,7 +29,9 @@ export default function PositiveAffirmations({
     enableTTS = false,
     speed = 5,
     density = 5,
-    colorful = false
+    colorful = false,
+    breathingScale,
+    phaseDuration
 }: PositiveAffirmationsProps) {
     const { userData } = useAuth();
 
