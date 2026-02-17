@@ -14,6 +14,10 @@ interface PositiveAffirmationsProps {
     speed?: number;
     density?: number;
     colorful?: boolean | "black";
+    /** For "inside" mode: Breathing scale factor (injected by BreathingGuide) */
+    breathingScale?: number;
+    /** For "inside" mode: Current breathing phase duration (injected by BreathingGuide) */
+    phaseDuration?: number;
 }
 
 import { useAuth } from "@/context/AuthContext";
@@ -240,6 +244,9 @@ export default function PositiveAffirmations({
 
     // Mode: Inside
     if (mode === "inside") {
+        const baseFontSize = 0.875; // Base size in rem (text-sm)
+        const scaledFontSize = breathingScale ? breathingScale * baseFontSize : baseFontSize;
+
         return (
             <AnimatePresence mode="wait">
                 <motion.div
@@ -248,18 +255,19 @@ export default function PositiveAffirmations({
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 1.1 }}
                     transition={{ duration: 0.5 }}
-                    // Req 75: Ensure checking full width availability
                     className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 p-4"
                 >
-                    <p
-                        className="text-xs md:text-sm font-bold text-center leading-relaxed w-[90%]"
+                    <motion.p
+                        className="font-bold text-center leading-relaxed w-[90%]"
+                        animate={{ fontSize: `${scaledFontSize}rem` }}
+                        transition={{ duration: phaseDuration || 1, ease: "easeInOut" }}
                         style={{
                             textWrap: "balance",
                             color: colorful === true ? `hsl(${Math.random() * 360}, 70%, 70%)` : colorful === "black" ? "#000000" : "#ffffff",
                         }}
                     >
                         {currentMessage}
-                    </p>
+                    </motion.p>
                 </motion.div>
             </AnimatePresence>
         );

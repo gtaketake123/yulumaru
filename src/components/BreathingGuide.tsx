@@ -264,11 +264,9 @@ export default function BreathingGuide({
                 {/* Background Circle */}
                 <div className="absolute w-48 h-48 rounded-full bg-white/5 blur-2xl" />
 
-                {/* Animated Circle */}
+                {/* Breathing Circle - Animated */}
                 <motion.div
                     animate={{
-                        // Req 52: Multiplier applies only when expanding (scale > 1)
-                        // This ensures resting size remains 1 (scale 1 * 1, or just 1)
                         scale: isPlaying
                             ? (currentPhase.scale > 1.0 ? currentPhase.scale * baseScale : currentPhase.scale)
                             : 1,
@@ -283,11 +281,21 @@ export default function BreathingGuide({
                 />
 
                 {/* Center Content - Rendered ON TOP of the circle, NOT scaled with it (Req: Fix Blur) */}
-                {centerContent && (
-                    <div className="absolute inset-0 flex items-center justify-center z-10">
-                        {centerContent}
-                    </div>
-                )}
+                {/* Req C5-6: Inject breathingScale prop for synchronized text scaling */}
+                {centerContent && (() => {
+                    const breathingScale = isPlaying
+                        ? (currentPhase.scale > 1.0 ? currentPhase.scale * baseScale : currentPhase.scale)
+                        : 1;
+                    const phaseDuration = isPlaying ? currentPhase.duration : 1;
+
+                    return (
+                        <div className="absolute inset-0 flex items-center justify-center z-10">
+                            {React.isValidElement(centerContent)
+                                ? React.cloneElement(centerContent, { breathingScale, phaseDuration } as any)
+                                : centerContent}
+                        </div>
+                    );
+                })()}
 
                 {/* Text Instruction - Only show if NO center content is provided (to avoid overlap) */}
                 {!centerContent && (
