@@ -40,13 +40,29 @@ export default function PositiveAffirmations({
             }
 
             // 2. Prioritize Favorites (Mix them in more frequently)
-            // Strategy: Add favorites to the pool X times to increase probability
+            // Strategy: Search for messages containing the favorite word and boost them.
+            // If no existing messages match, assume it's a custom affirmation and add the word itself.
             if (userData.favoriteWords && userData.favoriteWords.length > 0) {
                 const favorites = userData.favoriteWords.filter(w => !userData.blockedWords?.includes(w));
-                // Add favorites 3 times to make them appear more often
-                for (let i = 0; i < 3; i++) {
-                    available = [...available, ...favorites];
-                }
+
+                favorites.forEach(fav => {
+                    // Find existing messages that contain this favorite word/phrase
+                    const matchingMessages = available.filter(msg => msg.includes(fav));
+
+                    if (matchingMessages.length > 0) {
+                        // If matches found, boost THOSE messages (contextual boost)
+                        // Add them 3 times each to the pool
+                        for (let i = 0; i < 3; i++) {
+                            available = [...available, ...matchingMessages];
+                        }
+                    } else {
+                        // If no matches found, treat it as a custom new affirmation (literal add)
+                        // Add the custom phrase 3 times
+                        for (let i = 0; i < 3; i++) {
+                            available = [...available, fav];
+                        }
+                    }
+                });
             }
         }
 
