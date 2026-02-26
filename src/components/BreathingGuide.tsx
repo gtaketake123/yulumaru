@@ -15,6 +15,8 @@ interface BreathingGuideProps {
     circleColor?: string;
     centerContent?: React.ReactNode;
     baseScale?: number; // Req 49: Adjustable MAX scale multiplier
+    showCircle?: boolean;
+    setShowCircle?: (val: boolean) => void;
 }
 
 interface BreathingConfig {
@@ -106,6 +108,8 @@ export default function BreathingGuide({
     circleColor = "bg-gradient-to-br from-white/40 to-white/10",
     centerContent,
     baseScale = 1.8, // Req 49: Default multiplier
+    showCircle = true,
+    setShowCircle,
 }: BreathingGuideProps) {
     const [activeMode, setActiveMode] = useState<BreathingConfig>(
         BREATHING_MODES.find(m => m.id === defaultMode) || BREATHING_MODES[0]
@@ -245,6 +249,19 @@ export default function BreathingGuide({
                                         <p className="text-sm text-white/60 mt-1">{mode.description}</p>
                                     </button>
                                 ))}
+
+                                {/* 99-8-2: Circle Display Toggle inside mode selection */}
+                                {setShowCircle && (
+                                    <>
+                                        <div className="border-t border-white/20 my-4"></div>
+                                        <div onClick={(e) => { e.stopPropagation(); setShowCircle(!showCircle); }} className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white/10 transition-colors cursor-pointer bg-white/5 border border-transparent">
+                                            <span className="font-bold text-white">サークルの表示</span>
+                                            <div className={`w-10 h-5 rounded-full transition-colors relative ${showCircle ? 'bg-cyan-500' : 'bg-gray-500'}`}>
+                                                <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${showCircle ? 'left-[1.375rem]' : 'left-[0.125rem]'}`} />
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </motion.div>
                     </div>
@@ -260,60 +277,68 @@ export default function BreathingGuide({
             {mounted ? createPortal(Controls, document.body) : null}
 
             {/* Visualizer */}
-            <div className="relative flex items-center justify-center w-64 h-64 mb-12">
-                {/* Background Circle */}
-                <div className="absolute w-48 h-48 rounded-full bg-white/5 blur-2xl" />
+            {/* 99-8-1: Allow clicking the circle to start when paused */}
+            {showCircle !== false ? (
+                <div
+                    className={`relative flex items-center justify-center w-64 h-64 mb-12 ${!isPlaying ? 'cursor-pointer hover:scale-105 transition-transform' : ''}`}
+                    onClick={() => { if (!isPlaying) togglePlay(); }}
+                >
+                    {/* Background Circle */}
+                    <div className="absolute w-48 h-48 rounded-full bg-white/5 blur-2xl" />
 
-                {/* Breathing Circle - Animated */}
-                <motion.div
-                    animate={{
-                        scale: isPlaying
-                            ? (currentPhase.scale > 1.0 ? currentPhase.scale * baseScale : currentPhase.scale)
-                            : 1,
-                        opacity: isPlaying ? 0.8 : 0.5,
-                    }}
-                    transition={{
-                        duration: isPlaying ? currentPhase.duration : 1,
-                        ease: "easeInOut",
-                    }}
-                    className={`w-40 h-40 rounded-full border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.15)] md:shadow-[0_0_40px_rgba(255,255,255,0.2)] md:backdrop-blur-sm flex items-center justify-center ${circleColor}`}
-                    style={{ willChange: "transform" }}
-                />
+                    {/* Breathing Circle - Animated */}
+                    <motion.div
+                        animate={{
+                            scale: isPlaying
+                                ? (currentPhase.scale > 1.0 ? currentPhase.scale * baseScale : currentPhase.scale)
+                                : 1,
+                            opacity: isPlaying ? 0.8 : 0.5,
+                        }}
+                        transition={{
+                            duration: isPlaying ? currentPhase.duration : 1,
+                            ease: "easeInOut",
+                        }}
+                        className={`w-40 h-40 rounded-full border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.15)] md:shadow-[0_0_40px_rgba(255,255,255,0.2)] md:backdrop-blur-sm flex items-center justify-center ${circleColor}`}
+                        style={{ willChange: "transform" }}
+                    />
 
-                {/* Center Content - Rendered ON TOP of the circle, NOT scaled with it (Req: Fix Blur) */}
-                {centerContent && (
-                    <div className="absolute inset-0 flex items-center justify-center z-10">
-                        {centerContent}
-                    </div>
-                )}
+                    {/* Center Content - Rendered ON TOP of the circle, NOT scaled with it (Req: Fix Blur) */}
+                    {centerContent && (
+                        <div className="absolute inset-0 flex items-center justify-center z-10">
+                            {centerContent}
+                        </div>
+                    )}
 
-                {/* Text Instruction - Only show if NO center content is provided (to avoid overlap) */}
-                {!centerContent && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <AnimatePresence mode="wait">
-                            {isPlaying ? (
-                                <motion.p
-                                    key={currentPhase.label}
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 1.1 }}
-                                    className="text-2xl font-bold text-white tracking-widest drop-shadow-md text-center px-4"
-                                >
-                                    {currentPhase.label}
-                                </motion.p>
-                            ) : (
-                                <motion.p
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="text-lg text-white/60 font-medium"
-                                >
-                                    Ready
-                                </motion.p>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                )}
-            </div>
+                    {/* Text Instruction - Only show if NO center content is provided (to avoid overlap) */}
+                    {!centerContent && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <AnimatePresence mode="wait">
+                                {isPlaying ? (
+                                    <motion.p
+                                        key={currentPhase.label}
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 1.1 }}
+                                        className="text-2xl font-bold text-white tracking-widest drop-shadow-md text-center px-4"
+                                    >
+                                        {currentPhase.label}
+                                    </motion.p>
+                                ) : (
+                                    <motion.p
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        className="text-lg text-white/60 font-medium"
+                                    >
+                                        Ready
+                                    </motion.p>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="h-64 mb-12" /> // Empty placeholder to maintain layout
+            )}
 
 
 

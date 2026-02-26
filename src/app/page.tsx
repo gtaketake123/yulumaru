@@ -409,10 +409,18 @@ export default function Home() {
 
                 {/* Dropdown Menu - Show on State True */}
                 <div className={`absolute bottom-full left-0 w-full mb-2 py-2 bg-[#1a1a2e]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl transition-all transform origin-bottom overflow-hidden z-[301] ${isWordMenuOpen ? "opacity-100 visible scale-100" : "opacity-0 invisible scale-95"}`}>
-                  <div onClick={() => { setWordMode("breath-sync"); setIsWordMenuOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">呼吸連動</div>
-                  <div onClick={() => { setWordMode("random"); setIsWordMenuOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">手動</div>
-                  <div onClick={() => { setWordMode("falling"); setIsWordMenuOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">言葉の雨</div>
-                  <div onClick={() => { setWordMode("inside"); setIsWordMenuOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">サークル内</div>
+                  <div onClick={(e) => { e.stopPropagation(); setWordMode("breath-sync"); setIsWordMenuOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">呼吸連動</div>
+                  <div onClick={(e) => { e.stopPropagation(); setWordMode("random"); setIsWordMenuOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">手動</div>
+                  <div onClick={(e) => { e.stopPropagation(); setWordMode("falling"); setIsWordMenuOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">言葉の雨</div>
+                  <div onClick={(e) => { e.stopPropagation(); setWordMode("inside"); setIsWordMenuOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">サークル内</div>
+
+                  <div className="border-t border-white/20 my-1"></div>
+                  <div onClick={(e) => { e.stopPropagation(); setShowWords(!showWords); setIsWordMenuOpen(false); }} className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/10 text-xs transition-colors cursor-pointer">
+                    <span>言葉の表示</span>
+                    <div className={`w-8 h-4 rounded-full transition-colors relative ${showWords ? 'bg-cyan-500' : 'bg-gray-500'}`}>
+                      <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${showWords ? 'left-[1.125rem]' : 'left-[0.125rem]'}`} />
+                    </div>
+                  </div>
                 </div>
               </button>
             </div>
