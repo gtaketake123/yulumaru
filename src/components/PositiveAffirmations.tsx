@@ -217,19 +217,15 @@ export default function PositiveAffirmations({
                     </motion.div>
                 </AnimatePresence>
 
-                {/* 99-7-8: Perfectly X-aligned with Play button's left edge using Ghost Structure */}
+                {/* 99-7-8: fixed width offset aligns everything pixel perfectly */}
                 {createPortal(
-                    <div className="fixed bottom-[11.5%] left-1/2 -translate-x-1/2 ml-5 flex items-center justify-center gap-3 w-full max-w-lg px-4 pointer-events-none z-50">
+                    <div className="fixed bottom-[11.5%] left-1/2 -translate-x-[110px] flex items-center justify-start gap-3 pointer-events-none z-50">
                         <div className="flex gap-3">
                             {/* Play Button Slot */}
-                            <div className="relative">
-                                <div className="p-3 border border-transparent invisible pointer-events-none" aria-hidden="true">
-                                    <div className="w-[20px] h-[20px]" />
-                                </div>
-
+                            <div className="relative pointer-events-auto shrink-0 flex justify-center">
                                 <button
                                     onClick={handleManualClick}
-                                    className="absolute left-0 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto shadow-lg flex items-center justify-center shrink-0"
+                                    className="p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer shadow-lg flex items-center justify-center shrink-0"
                                     title="次の言葉"
                                     aria-label="次の言葉"
                                 >

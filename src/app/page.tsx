@@ -344,30 +344,27 @@ export default function Home() {
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center justify-center min-h-screen pb-16">
 
-        {showCircle && (
-          <div className={`mb-4 scale-90 md:scale-100 transition-transform relative z-10 flex flex-col items-center`}>
-
-            <BreathingGuide
-              autoStart={true}
-              defaultMode="6-6"
-              onBreathChange={handleBreathChange}
-              onCycleComplete={handleCycleComplete}
-              circleColor={getCircleColorClass(circleColor)}
-              baseScale={circleScale}
-              showCircle={showCircle}
-              setShowCircle={setShowCircle}
-              centerContent={
-                showWords && wordMode === "inside" ? (
-                  <PositiveAffirmations
-                    mode="inside"
-                    trigger={cycleCount}
-                    colorful={fallingColorful}
-                  />
-                ) : null
-              }
-            />
-          </div>
-        )}
+        <div className={`mb-4 scale-90 md:scale-100 transition-transform relative z-10 flex flex-col items-center`}>
+          <BreathingGuide
+            autoStart={true}
+            defaultMode="6-6"
+            onBreathChange={handleBreathChange}
+            onCycleComplete={handleCycleComplete}
+            circleColor={getCircleColorClass(circleColor)}
+            baseScale={circleScale}
+            showCircle={showCircle}
+            setShowCircle={setShowCircle}
+            centerContent={
+              showWords && wordMode === "inside" ? (
+                <PositiveAffirmations
+                  mode="inside"
+                  trigger={cycleCount}
+                  colorful={fallingColorful}
+                />
+              ) : null
+            }
+          />
+        </div>
 
         {/* Toggle Words Visibility */}
         {/* Req 99-2: Fixed positioning for manual mode */}
@@ -384,10 +381,10 @@ export default function Home() {
         )}
 
         {/* Req 99-6: Word Mode Dropdown at Bottom - Redesigned C4-5 (Portal Fix C4-9) */}
-        {/* 99-7-8: 100% Pixel-perfect X-axis Alignment with Breathing Mode Button using invisible ghost elements */}
+        {/* 99-7-8: fixed width offset aligns everything pixel perfectly */}
         {mounted ? createPortal(
           <div
-            className="fixed z-[300] bottom-[11.5%] left-1/2 -translate-x-1/2 ml-5 flex items-center justify-center gap-3 w-full max-w-lg px-4 pointer-events-none"
+            className="fixed z-[300] bottom-[11.5%] left-1/2 -translate-x-[110px] flex items-center justify-start gap-3 pointer-events-none"
           >
             {/* Invisible ghost block duplicating BreathingGuide's [Play] and [Reset] buttons dimensions exactly */}
             {/* But now the FIRST slot is invisible (Play button size) and SECOND slot has the Word Toggle Button */}
