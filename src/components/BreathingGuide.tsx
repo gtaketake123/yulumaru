@@ -175,6 +175,14 @@ export default function BreathingGuide({
         setShowSettings(false);
     };
 
+    // 99-8-9: Stop and reset animation if circle visibility is toggled off
+    useEffect(() => {
+        if (showCircle === false && isPlaying) {
+            setIsPlaying(false);
+            setCurrentPhaseIndex(0);
+        }
+    }, [showCircle, isPlaying]);
+
     const togglePlay = () => setIsPlaying(!isPlaying);
 
     const reset = () => {
@@ -204,7 +212,7 @@ export default function BreathingGuide({
                             aria-label={showCircle ? "サークルを非表示" : "サークルを表示"}
                             title="サークルの表示ON/OFF"
                         >
-                            {showCircle ? <Eye size={20} /> : <EyeOff size={20} />}
+                            <Circle size={20} />
                         </button>
                     )}
                 </div>
