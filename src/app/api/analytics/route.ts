@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, updateDoc, increment } from 'firebase/firestore';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
+const NAMESPACE = "mindful-moments-app-v2";
+const API_BASE = `https://api.counterapi.dev/v1/${NAMESPACE}`;
 
 // Helper to get JST date parts
 const getJSTDateParts = () => {
@@ -18,31 +19,49 @@ const getJSTDateParts = () => {
     };
 };
 
+// Helper: Fetch count for a specific key
+const getCount = async (key: string) => {
+    try {
+        const res = await fetch(`${API_BASE}/${key}`, { cache: 'no-store' });
+        if (!res.ok) return 0;
+        const data = await res.json();
+        return data.count || 0;
+    } catch {
+        return 0;
+    }
+};
+
+// Helper: Increment count for a specific key
+const upCount = async (key: string) => {
+    try {
+        await fetch(`${API_BASE}/${key}/up`, { cache: 'no-store' });
+    } catch {
+        // Silently fail if increment fails
+    }
+};
+
 export async function GET() {
     try {
-        if (!db) return NextResponse.json({ error: "DB not initialized" }, { status: 500 });
-
-        const trafficRef = doc(db, 'analytics', 'traffic');
-        const snap = await getDoc(trafficRef);
-
         const { dailyKey, monthlyKey } = getJSTDateParts();
 
-        if (!snap.exists()) {
-            return NextResponse.json({
-                dailyViews: 0, dailyUsers: 0,
-                monthlyViews: 0, monthlyUsers: 0,
-                totalViews: 0, totalUsers: 0
-            });
-        }
+        // Fetch all 6 keys concurrently for performance
+        const [
+            dailyViews, dailyUsers,
+            monthlyViews, monthlyUsers,
+            totalViews, totalUsers
+        ] = await Promise.all([
+            getCount(`${dailyKey}_views`),
+            getCount(`${dailyKey}_users`),
+            getCount(`${monthlyKey}_views`),
+            getCount(`${monthlyKey}_users`),
+            getCount('total_views'),
+            getCount('total_users')
+        ]);
 
-        const data = snap.data();
         return NextResponse.json({
-            dailyViews: data[`${dailyKey}_views`] || 0,
-            dailyUsers: data[`${dailyKey}_users`] || 0,
-            monthlyViews: data[`${monthlyKey}_views`] || 0,
-            monthlyUsers: data[`${monthlyKey}_users`] || 0,
-            totalViews: data.total_views || 0,
-            totalUsers: data.total_users || 0,
+            dailyViews, dailyUsers,
+            monthlyViews, monthlyUsers,
+            totalViews, totalUsers,
         });
     } catch (error) {
         console.error("Analytics fetch error:", error);
@@ -52,8 +71,6 @@ export async function GET() {
 
 export async function POST(req: Request) {
     try {
-        if (!db) return NextResponse.json({ error: "DB not initialized" }, { status: 500 });
-
         // Use req.json() safely, fallback to default values if body is empty or malformed
         let payload = { isNewSession: true, isNewDailyUser: true, isNewMonthlyUser: true, isNewTotalUser: true };
         try {
@@ -66,38 +83,27 @@ export async function POST(req: Request) {
         const { isNewSession, isNewDailyUser, isNewMonthlyUser, isNewTotalUser } = payload;
         const { dailyKey, monthlyKey } = getJSTDateParts();
 
-        const trafficRef = doc(db, 'analytics', 'traffic');
-
-        // Build the update object dynamically
-        const updates: Record<string, any> = {};
-        let hasUpdates = false;
+        const promises: Promise<void>[] = [];
 
         if (isNewSession) {
-            updates.total_views = increment(1);
-            updates[`${monthlyKey}_views`] = increment(1);
-            updates[`${dailyKey}_views`] = increment(1);
-            hasUpdates = true;
+            promises.push(upCount('total_views'));
+            promises.push(upCount(`${monthlyKey}_views`));
+            promises.push(upCount(`${dailyKey}_views`));
         }
 
         if (isNewTotalUser) {
-            updates.total_users = increment(1);
-            hasUpdates = true;
+            promises.push(upCount('total_users'));
         }
 
         if (isNewMonthlyUser) {
-            updates[`${monthlyKey}_users`] = increment(1);
-            hasUpdates = true;
+            promises.push(upCount(`${monthlyKey}_users`));
         }
 
         if (isNewDailyUser) {
-            updates[`${dailyKey}_users`] = increment(1);
-            hasUpdates = true;
+            promises.push(upCount(`${dailyKey}_users`));
         }
 
-        if (hasUpdates) {
-            // Use setDoc with merge: true to avoid failing if the document doesn't exist yet
-            await setDoc(trafficRef, updates, { merge: true });
-        }
+        await Promise.all(promises);
 
         return NextResponse.json({ success: true });
     } catch (error) {
