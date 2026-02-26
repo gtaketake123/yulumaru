@@ -3,7 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wind, Play, Pause, RotateCcw, Settings, X, Circle, Eye, EyeOff } from "lucide-react";
+import { Wind, Play, Pause, RotateCcw, Settings, X, Circle } from "lucide-react";
+
+// (Skipping to the relevant button code inside Controls)
+// Instead of replacing the whole file, I will just replace the specific lines in the next steps using target content.
 
 type BreathingMode = "relax" | "box" | "5-5" | "alternate" | "sigh" | "6-6" | "deep";
 

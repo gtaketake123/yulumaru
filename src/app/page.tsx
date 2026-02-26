@@ -7,7 +7,7 @@ import BreathingGuide from "@/components/BreathingGuide";
 import SettingsMenu from "@/components/SettingsMenu";
 import BackgroundAudio from "@/components/BackgroundAudio";
 import StarryBackground from "@/components/StarryBackground";
-import { ChevronDown, RefreshCw, Settings2, Palette, Circle, Sparkles, Rocket, Heart, Eye, EyeOff } from "lucide-react";
+import { ChevronDown, RefreshCw, Settings2, Palette, Circle, Sparkles, Rocket, Heart, Type } from "lucide-react";
 
 export default function Home() {
   const [activePhase, setActivePhase] = useState("inhale");
@@ -399,7 +399,7 @@ export default function Home() {
                   aria-label={showWords ? "言葉を非表示" : "言葉を表示"}
                   title="言葉の表示ON/OFF"
                 >
-                  {showWords ? <Eye size={20} /> : <EyeOff size={20} />}
+                  <Type size={20} />
                 </button>
               </div>
             </div>
