@@ -31,39 +31,33 @@ export default function PositiveAffirmations({
 
     // Helper: Get filtered messages based on user preferences
     const getFilteredMessages = useCallback(() => {
-        let available = messages.map(m => m.text);
+        let original = messages.map(m => m.text);
 
-        if (userData) {
-            // 1. Remove Blocked Words
-            if (userData.blockedWords && userData.blockedWords.length > 0) {
-                available = available.filter(msg => !userData.blockedWords.includes(msg));
-            }
+        if (userData?.blockedWords && userData.blockedWords.length > 0) {
+            original = original.filter(msg => !userData.blockedWords.includes(msg));
+        }
 
-            // 2. Prioritize Favorites (Mix them in more frequently)
-            // Strategy: Search for messages containing the favorite word and boost them.
-            // If no existing messages match, assume it's a custom affirmation and add the word itself.
-            if (userData.favoriteWords && userData.favoriteWords.length > 0) {
-                const favorites = userData.favoriteWords.filter(w => !userData.blockedWords?.includes(w));
+        let available = [...original];
 
-                favorites.forEach(fav => {
-                    // Find existing messages that contain this favorite word/phrase
-                    const matchingMessages = available.filter(msg => msg.includes(fav));
+        // 2. Prioritize Favorites (Mix them in more frequently)
+        if (userData?.favoriteWords && userData.favoriteWords.length > 0) {
+            const favorites = userData.favoriteWords.filter(w => !userData?.blockedWords?.includes(w));
 
-                    if (matchingMessages.length > 0) {
-                        // If matches found, boost THOSE messages (contextual boost)
-                        // Add them 3 times each to the pool
-                        for (let i = 0; i < 3; i++) {
-                            available = [...available, ...matchingMessages];
-                        }
-                    } else {
-                        // If no matches found, treat it as a custom new affirmation (literal add)
-                        // Add the custom phrase 3 times
-                        for (let i = 0; i < 3; i++) {
-                            available = [...available, fav];
-                        }
+            favorites.forEach(fav => {
+                // FIX: Search matching messages in the ORIGINAL list, NOT the 'available' list.
+                // This prevents exponential growth if multiple favorites match the same strings.
+                const matchingMessages = original.filter(msg => msg.includes(fav));
+
+                if (matchingMessages.length > 0) {
+                    for (let i = 0; i < 3; i++) {
+                        available = available.concat(matchingMessages);
                     }
-                });
-            }
+                } else {
+                    for (let i = 0; i < 3; i++) {
+                        available.push(fav);
+                    }
+                }
+            });
         }
 
         // Safety: If all words blocked, return fallback
