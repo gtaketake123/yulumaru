@@ -354,6 +354,8 @@ export default function Home() {
               onCycleComplete={handleCycleComplete}
               circleColor={getCircleColorClass(circleColor)}
               baseScale={circleScale}
+              showCircle={showCircle}
+              setShowCircle={setShowCircle}
               centerContent={
                 showWords && wordMode === "inside" ? (
                   <PositiveAffirmations

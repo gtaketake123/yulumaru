@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wind, Play, Pause, RotateCcw, Settings, X, Circle } from "lucide-react";
+import { Wind, Play, Pause, RotateCcw, Settings, X, Circle, Eye, EyeOff } from "lucide-react";
 
 type BreathingMode = "relax" | "box" | "5-5" | "alternate" | "sigh" | "6-6" | "deep";
 
@@ -201,7 +201,7 @@ export default function BreathingGuide({
                             aria-label={showCircle ? "サークルを非表示" : "サークルを表示"}
                             title="サークルの表示ON/OFF"
                         >
-                            <Circle size={20} />
+                            {showCircle ? <Eye size={20} /> : <EyeOff size={20} />}
                         </button>
                     )}
                 </div>
