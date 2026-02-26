@@ -210,18 +210,50 @@ export default function Home() {
   // Increment view count on mount
   useEffect(() => {
     const incrementViews = async () => {
-      // Prevent double counting in Strict Mode or re-renders
-      const sessionKey = `viewed_${new Date().toDateString()}`; // Simple daily unique check per session? Or just strict mount?
-      // User asked for "cumulative access", strict mount is better for "hits".
-      // But StrictMode fires twice. We use feature detection or ref.
-      // Actually, simple session storage key check for "visited_session" 
-      if (!sessionStorage.getItem("visited_session")) {
-        try {
-          await fetch('/api/analytics', { method: 'POST' });
-          sessionStorage.setItem("visited_session", "true");
-        } catch (e) {
-          console.error("Analytics error", e);
-        }
+      // Calculate JST Date strings for uniqueness checks
+      const jstDate = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
+      const year = jstDate.getUTCFullYear();
+      const month = String(jstDate.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(jstDate.getUTCDate()).padStart(2, '0');
+
+      const currentDailyKey = `${year}-${month}-${day}`;
+      const currentMonthlyKey = `${year}-${month}`;
+
+      // 1. Session check to prevent double counting in React StrictMode/Hot Reload
+      const isNewSession = !sessionStorage.getItem("visited_session");
+
+      // If it's not a new session, we don't need to increment anything again for this load
+      if (!isNewSession) return;
+
+      // 2. LocalStorage checks for Unique Users
+      const lastDaily = localStorage.getItem("last_visit_daily");
+      const lastMonthly = localStorage.getItem("last_visit_monthly");
+      const lastTotal = localStorage.getItem("last_visit_total");
+
+      const isNewDailyUser = lastDaily !== currentDailyKey;
+      const isNewMonthlyUser = lastMonthly !== currentMonthlyKey;
+      const isNewTotalUser = !lastTotal;
+
+      try {
+        await fetch('/api/analytics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            isNewSession,
+            isNewDailyUser,
+            isNewMonthlyUser,
+            isNewTotalUser
+          })
+        });
+
+        // Mark as visited in storages
+        sessionStorage.setItem("visited_session", "true");
+        if (isNewDailyUser) localStorage.setItem("last_visit_daily", currentDailyKey);
+        if (isNewMonthlyUser) localStorage.setItem("last_visit_monthly", currentMonthlyKey);
+        if (isNewTotalUser) localStorage.setItem("last_visit_total", "true");
+
+      } catch (e) {
+        console.error("Analytics error", e);
       }
     };
     incrementViews();
@@ -243,7 +275,18 @@ export default function Home() {
       try {
         const res = await fetch('/api/analytics');
         const data = await res.json();
-        alert(`Developer Info:\nTotal Views: ${data.views}`);
+
+        const alertMsg = [
+          "📊 アクセス解析",
+          `・本日のアクセス数：${data.dailyViews} 回`,
+          `・本日の人数：${data.dailyUsers} 人`,
+          `・今月のアクセス数：${data.monthlyViews} 回`,
+          `・今月の人数：${data.monthlyUsers} 人`,
+          `・累計アクセス数：${data.totalViews} 回`,
+          `・累計アクセス人数：${data.totalUsers} 人`
+        ].join('\n');
+
+        alert(alertMsg);
       } catch (e) {
         alert("Failed to fetch analytics");
       }
