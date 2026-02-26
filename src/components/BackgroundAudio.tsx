@@ -152,15 +152,17 @@ export default function BackgroundAudio({ activeType, setBgmSelection }: { activ
         setBgmSelection(order[nextIndex] as any);
     };
 
-    return (
-        <div className="fixed bottom-[4%] left-6 z-[600] flex flex-col-reverse items-center gap-4 animate-fade-in pointer-events-auto touch-manipulation">
+    const buttonClasses = "p-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white/80 hover:bg-white/20 active:scale-95 transition-all shadow-lg shrink-0";
+
+    const ambientControlsList = (
+        <>
             {/* Play/Stop Button (Bottom) */}
             <button
                 onClick={toggleAudio}
-                className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white/80 hover:bg-white/20 active:scale-95 transition-all shadow-lg"
+                className={buttonClasses}
                 aria-label={isPlaying ? "環境音を停止" : "環境音を再生"}
             >
-                {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
+                {isPlaying ? <Volume2 size={20} /> : <VolumeX size={20} />}
             </button>
 
             {/* Volume Slider (Middle - Vertical) */}
@@ -182,12 +184,45 @@ export default function BackgroundAudio({ activeType, setBgmSelection }: { activ
             {isPlaying && (
                 <button
                     onClick={cycleBgm}
-                    className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white/80 hover:bg-white/20 active:scale-95 transition-all shadow-lg animate-fade-in"
+                    className={`${buttonClasses} animate-fade-in`}
                     aria-label="次の環境音へ"
                 >
                     <StepForward size={20} />
                 </button>
             )}
-        </div>
+        </>
+    );
+
+    return (
+        <>
+            {/* Desktop Layout: Fixed to left-6 */}
+            <div className="hidden md:flex fixed bottom-[4%] left-6 z-[600] flex-col-reverse items-center gap-4 animate-fade-in pointer-events-auto touch-manipulation">
+                {ambientControlsList}
+            </div>
+
+            {/* Mobile Layout: Anchored to BreathingGuide Controls via Ghost Structure */}
+            <div className="md:hidden fixed bottom-[4%] left-1/2 -translate-x-1/2 ml-5 flex items-center justify-center gap-3 w-full max-w-lg px-4 pointer-events-none z-[600]">
+                <div className="flex gap-3">
+                    {/* Play Button Slot */}
+                    <div className="relative">
+                        {/* Ghost element to reserve exact dimensions of BreathingGuide's Play button */}
+                        <div className="p-3 border border-transparent invisible pointer-events-none" aria-hidden="true">
+                            <div className="w-[20px] h-[20px]" />
+                        </div>
+
+                        {/* Ambient Controls absolutely positioned exactly gap-3 (12px = 0.75rem) to the left */}
+                        <div className="absolute bottom-0 right-[calc(100%_+_0.75rem)] flex flex-col-reverse items-center gap-4 pointer-events-auto">
+                            {ambientControlsList}
+                        </div>
+                    </div>
+                    {/* Reset Button Slot */}
+                    <div className="p-3 border border-transparent invisible pointer-events-none" aria-hidden="true">
+                        <div className="w-[20px] h-[20px]" />
+                    </div>
+                </div>
+                {/* Mode Selector Slot */}
+                <div className="min-w-[140px] px-6 py-3 border border-transparent invisible pointer-events-none" aria-hidden="true" />
+            </div>
+        </>
     );
 }

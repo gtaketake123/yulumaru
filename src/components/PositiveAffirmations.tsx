@@ -217,15 +217,32 @@ export default function PositiveAffirmations({
                     </motion.div>
                 </AnimatePresence>
 
-                {/* Req 12-2: Fixed Position Button via Portal to escape transform context */}
+                {/* 99-7-8: Perfectly X-aligned with Play button's left edge using Ghost Structure */}
                 {createPortal(
-                    <button
-                        onClick={handleManualClick}
-                        className="fixed bottom-[11.5%] left-[10.0%] md:left-[calc(50%_-_130px)] flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto z-50 shadow-lg text-sm"
-                    >
-                        <RefreshCw className="group-hover:rotate-180 transition-transform duration-500" size={16} />
-                        <span>次の言葉</span>
-                    </button>,
+                    <div className="fixed bottom-[11.5%] left-1/2 -translate-x-1/2 ml-5 flex items-center justify-center gap-3 w-full max-w-lg px-4 pointer-events-none z-50">
+                        <div className="flex gap-3">
+                            {/* Play Button Slot */}
+                            <div className="relative">
+                                <div className="p-3 border border-transparent invisible pointer-events-none" aria-hidden="true">
+                                    <div className="w-[20px] h-[20px]" />
+                                </div>
+
+                                <button
+                                    onClick={handleManualClick}
+                                    className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto shadow-lg text-sm whitespace-nowrap"
+                                >
+                                    <RefreshCw className="group-hover:rotate-180 transition-transform duration-500" size={16} />
+                                    <span>次の言葉</span>
+                                </button>
+                            </div>
+                            {/* Reset Button Slot */}
+                            <div className="p-3 border border-transparent invisible pointer-events-none" aria-hidden="true">
+                                <div className="w-[20px] h-[20px]" />
+                            </div>
+                        </div>
+                        {/* Mode Selector Slot */}
+                        <div className="min-w-[140px] px-6 py-3 border border-transparent invisible pointer-events-none" aria-hidden="true" />
+                    </div>,
                     document.body
                 )}
             </div>
