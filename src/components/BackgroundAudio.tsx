@@ -153,7 +153,7 @@ export default function BackgroundAudio({ activeType, setBgmSelection }: { activ
     };
 
     return (
-        <div className="fixed bottom-6 left-6 z-[600] flex flex-col-reverse items-center gap-4 animate-fade-in pointer-events-auto touch-manipulation">
+        <div className="fixed bottom-[4%] left-6 z-[600] flex flex-col-reverse items-center gap-4 animate-fade-in pointer-events-auto touch-manipulation">
             {/* Play/Stop Button (Bottom) */}
             <button
                 onClick={toggleAudio}

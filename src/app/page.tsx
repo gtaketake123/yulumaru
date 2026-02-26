@@ -382,18 +382,18 @@ export default function Home() {
         )}
 
         {/* Req 99-6: Word Mode Dropdown at Bottom - Redesigned C4-5 (Portal Fix C4-9) */}
-        {/* Mobile-20: PC Layout Alignment - Match BreathingGuide Controls structure */}
+        {/* 99-7-8: 100% Pixel-perfect X-axis Alignment with Breathing Mode Button using invisible ghost elements */}
         {mounted ? createPortal(
           <div
-            className="fixed z-[300] bottom-[11.5%] 
-              left-[54.6%] 
-              md:left-1/2 md:-translate-x-1/2 md:ml-5 md:flex md:items-center md:justify-center md:gap-8 md:w-full md:max-w-lg md:px-4 md:pointer-events-none"
+            className="fixed z-[300] bottom-[11.5%] left-1/2 -translate-x-1/2 ml-5 flex items-center justify-center gap-3 w-full max-w-lg px-4 pointer-events-none"
           >
-            {/* Spacer to match Play/Reset buttons width (44+44+8 = 96px approx + buffer) */}
-            {/* BreathingGuide: Play(p-3->~46px) + Gap(2->8px) + Reset(~46px). Total ~100px */}
-            <div className="hidden md:block w-[100px] shrink-0" />
+            {/* Invisible ghost block duplicating BreathingGuide's [Play] and [Reset] buttons dimensions exactly */}
+            <div className="flex gap-3 invisible" aria-hidden="true">
+              <div className="p-3 border border-transparent"><div className="w-[20px] h-[20px]" /></div>
+              <div className="p-3 border border-transparent"><div className="w-[20px] h-[20px]" /></div>
+            </div>
 
-            <div className="relative pointer-events-auto">
+            <div className="relative pointer-events-auto shrink-0 flex justify-center">
               <button
                 onClick={() => setIsWordMenuOpen(!isWordMenuOpen)}
                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 shadow-lg min-w-[140px] justify-center"
