@@ -7,7 +7,7 @@ import BreathingGuide from "@/components/BreathingGuide";
 import SettingsMenu from "@/components/SettingsMenu";
 import BackgroundAudio from "@/components/BackgroundAudio";
 import StarryBackground from "@/components/StarryBackground";
-import { ChevronDown, RefreshCw, Settings2, Palette, Circle, Sparkles, Rocket, Heart } from "lucide-react";
+import { ChevronDown, RefreshCw, Settings2, Palette, Circle, Sparkles, Rocket, Heart, Eye, EyeOff } from "lucide-react";
 
 export default function Home() {
   const [activePhase, setActivePhase] = useState("inhale");
@@ -388,9 +388,21 @@ export default function Home() {
             className="fixed z-[300] bottom-[11.5%] left-1/2 -translate-x-1/2 ml-5 flex items-center justify-center gap-3 w-full max-w-lg px-4 pointer-events-none"
           >
             {/* Invisible ghost block duplicating BreathingGuide's [Play] and [Reset] buttons dimensions exactly */}
-            <div className="flex gap-3 invisible" aria-hidden="true">
-              <div className="p-3 border border-transparent"><div className="w-[20px] h-[20px]" /></div>
-              <div className="p-3 border border-transparent"><div className="w-[20px] h-[20px]" /></div>
+            {/* But now the FIRST slot is invisible (Play button size) and SECOND slot has the Word Toggle Button */}
+            <div className="flex gap-3" aria-hidden="true">
+              <div className="p-3 border border-transparent invisible pointer-events-none"><div className="w-[20px] h-[20px]" /></div>
+
+              {/* 99-8-5: Words Visibility Toggle Button in Reset Button Position */}
+              <div className="relative pointer-events-auto shrink-0 flex justify-center">
+                <button
+                  onClick={() => setShowWords(!showWords)}
+                  className={`p-3 rounded-full transition-all backdrop-blur-md border shadow-lg flex items-center justify-center shrink-0 ${showWords ? 'bg-cyan-500/80 border-cyan-400 hover:bg-cyan-400/80 text-white' : 'bg-white/10 border-white/10 hover:bg-white/20 text-white/60'}`}
+                  aria-label={showWords ? "言葉を非表示" : "言葉を表示"}
+                  title="言葉の表示ON/OFF"
+                >
+                  {showWords ? <Eye size={20} /> : <EyeOff size={20} />}
+                </button>
+              </div>
             </div>
 
             <div className="relative pointer-events-auto shrink-0 flex justify-center">

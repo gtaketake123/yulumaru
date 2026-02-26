@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wind, Play, Pause, RotateCcw, Settings, X } from "lucide-react";
+import { Wind, Play, Pause, RotateCcw, Settings, X, Circle } from "lucide-react";
 
 type BreathingMode = "relax" | "box" | "5-5" | "alternate" | "sigh" | "6-6" | "deep";
 
@@ -193,13 +193,17 @@ export default function BreathingGuide({
                     >
                         {isPlaying ? <Pause size={20} /> : <Play size={20} />}
                     </button>
-                    <button
-                        onClick={reset}
-                        className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10 shadow-lg"
-                        aria-label="リセット"
-                    >
-                        <RotateCcw size={20} />
-                    </button>
+                    {/* 99-8-4: Replaced Reset button with Circle Visibility Toggle Button */}
+                    {setShowCircle && (
+                        <button
+                            onClick={() => setShowCircle(!showCircle)}
+                            className={`p-3 rounded-full transition-all backdrop-blur-md border shadow-lg ${showCircle ? 'bg-cyan-500/80 border-cyan-400 hover:bg-cyan-400/80 text-white' : 'bg-white/10 border-white/10 hover:bg-white/20 text-white/60'}`}
+                            aria-label={showCircle ? "サークルを非表示" : "サークルを表示"}
+                            title="サークルの表示ON/OFF"
+                        >
+                            <Circle size={20} />
+                        </button>
+                    )}
                 </div>
 
                 <button
@@ -230,8 +234,24 @@ export default function BreathingGuide({
                             className="relative w-full max-w-md bg-lake-900/95 backdrop-blur-xl rounded-3xl p-6 overflow-y-auto border border-white/10 shadow-2xl max-h-[80vh]"
                         >
                             <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-xl font-bold text-white">呼吸法を選択</h3>
-                                <button onClick={() => setShowSettings(false)} className="text-white/70 hover:text-white">
+                                <div className="flex items-center gap-4">
+                                    <h3 className="text-xl font-bold text-white">呼吸法を選択</h3>
+
+                                    {/* 99-8-3: Circle Display Toggle moved next to the title */}
+                                    {setShowCircle && (
+                                        <div
+                                            onClick={(e) => { e.stopPropagation(); setShowCircle(!showCircle); }}
+                                            className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-white/10 transition-colors cursor-pointer bg-white/5 border border-white/10"
+                                            title="サークルの表示ON/OFF"
+                                        >
+                                            <div className={`w-8 h-4 rounded-full transition-colors relative ${showCircle ? 'bg-cyan-500' : 'bg-gray-500'}`}>
+                                                <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${showCircle ? 'left-[1.125rem]' : 'left-[0.125rem]'}`} />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <button onClick={() => setShowSettings(false)} className="text-white/70 hover:text-white shrink-0">
                                     <X size={24} />
                                 </button>
                             </div>
@@ -249,19 +269,6 @@ export default function BreathingGuide({
                                         <p className="text-sm text-white/60 mt-1">{mode.description}</p>
                                     </button>
                                 ))}
-
-                                {/* 99-8-2: Circle Display Toggle inside mode selection */}
-                                {setShowCircle && (
-                                    <>
-                                        <div className="border-t border-white/20 my-4"></div>
-                                        <div onClick={(e) => { e.stopPropagation(); setShowCircle(!showCircle); }} className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white/10 transition-colors cursor-pointer bg-white/5 border border-transparent">
-                                            <span className="font-bold text-white">サークルの表示</span>
-                                            <div className={`w-10 h-5 rounded-full transition-colors relative ${showCircle ? 'bg-cyan-500' : 'bg-gray-500'}`}>
-                                                <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${showCircle ? 'left-[1.375rem]' : 'left-[0.125rem]'}`} />
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
                             </div>
                         </motion.div>
                     </div>

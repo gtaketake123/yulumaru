@@ -229,13 +229,14 @@ export default function PositiveAffirmations({
 
                                 <button
                                     onClick={handleManualClick}
-                                    className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto shadow-lg text-sm whitespace-nowrap"
+                                    className="absolute left-0 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white transition-all group cursor-pointer pointer-events-auto shadow-lg flex items-center justify-center shrink-0"
+                                    title="次の言葉"
+                                    aria-label="次の言葉"
                                 >
-                                    <RefreshCw className="group-hover:rotate-180 transition-transform duration-500" size={16} />
-                                    <span>次の言葉</span>
+                                    <RefreshCw className="group-hover:rotate-180 transition-transform duration-500" size={20} />
                                 </button>
                             </div>
-                            {/* Reset Button Slot */}
+                            {/* Reset Button Slot (Kept empty here as it's populated by page.tsx toggle) */}
                             <div className="p-3 border border-transparent invisible pointer-events-none" aria-hidden="true">
                                 <div className="w-[20px] h-[20px]" />
                             </div>

@@ -201,7 +201,7 @@ export default function BackgroundAudio({ activeType, setBgmSelection }: { activ
             </div>
 
             {/* Mobile Layout: Anchored to BreathingGuide Controls via Ghost Structure */}
-            <div className="md:hidden fixed bottom-[4%] left-1/2 -translate-x-1/2 ml-5 flex items-center justify-center gap-3 w-full max-w-lg px-4 pointer-events-none z-[600]">
+            <div className="md:hidden fixed bottom-[4%] left-1/2 -translate-x-[51%] ml-5 flex items-center justify-center gap-3 w-full max-w-lg px-4 pointer-events-none z-[600]">
                 <div className="flex gap-3">
                     {/* Play Button Slot */}
                     <div className="relative">
